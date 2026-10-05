@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}{{ farmer.full_name }}'s Seller Profile | FarmLink{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Seller Info Sidebar -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow border-0 rounded-4 p-4 text-center">
+                <img src="{{ url_for('static', filename='uploads/profiles/default.png') if not farmer.profile_image else url_for('static', filename='uploads/' + farmer.profile_image) }}"
+                     class="rounded-circle border shadow-sm mx-auto mb-3"
+                     width="120"
+                     height="120"
+                     alt="Seller Photo">
+                
+                <h4 class="fw-bold mb-1">{{ farmer.full_name }}</h4>
+                <span class="badge bg-success-subtle text-success mb-3 px-3 py-2 rounded-pill">{{ _('local_seller') }}</span>
+                
+                <p class="text-muted mb-4">
+                    <i class="bi bi-geo-alt-fill text-danger"></i>
+                    {{ farmer.village.name if farmer.village else '' }}, {{ farmer.taluka.name if farmer.taluka else '' }}, {{ farmer.district.name if farmer.district else '' }}
+                </p>
+
+                <div class="text-start mb-4">
+                    <label class="form-label text-muted mb-1 small uppercase fw-bold">{{ _('address') }}</label>
+                    <p class="fw-medium">{{ farmer.address if farmer.address else _('no_address_detailed') }}</p>
+                </div>
+                
+                <div class="d-grid">
+                    <a href="/buyer/contact/{{ farmer.id }}" class="btn btn-success">
+                        <i class="bi bi-telephone-fill"></i> {{ _('get_contact_details') }}
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seller Products List -->
+        <div class="col-lg-8">
+            <h3 class="fw-bold mb-4 text-success">{{ _('active_listings_from') }} {{ farmer.full_name }}</h3>
+            
+            <div class="row g-4">
+                {% for product in products %}
+                <div class="col-md-6">
+                    <div class="card shadow-sm border-0 h-100 rounded-3 overflow-hidden">
+                        <img src="{{ url_for('static', filename='uploads/' + product.image if product.image else 'uploads/products/default.jpg') }}"
+                             class="card-img-top"
+                             style="height: 180px; object-fit: cover;"
+                             alt="{{ product.title }}">
+                        <div class="card-body p-3 d-flex flex-column">
+                            <h5 class="card-title fw-bold mb-1">{{ product.title }}</h5>
+                            <span class="badge bg-light text-dark align-self-start mb-2">{{ product.category.name if product.category else _('uncategorized') }}</span>
+                            <p class="text-muted small flex-grow-1">{{ product.description }}</p>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <h4 class="text-success fw-bold mb-0">₹{{ product.price }} / {{ product.unit }}</h4>
+                                <a href="/buyer/product/{{ product.id }}" class="btn btn-success btn-sm">{{ _('details') }}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center py-5 rounded-3">
+                        <i class="bi bi-info-circle display-4 text-info mb-3 d-block"></i>
+                        <h5>{{ _('no_active_listings') }}</h5>
+                        <p class="mb-0 text-muted">{{ _('check_back_later_seller') }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

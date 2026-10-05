@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}My Products | FarmLink{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold">
+                <i class="bi bi-box-seam-fill text-success"></i>
+                {{ _('my_products') }}
+            </h2>
+
+            <p class="text-muted mb-0">
+                {{ _('manage_products_list_desc') }}
+            </p>
+        </div>
+
+        <a href="/farmer/product/add" class="btn btn-success">
+            <i class="bi bi-plus-circle-fill"></i>
+            {{ _('add_new_product') }}
+        </a>
+
+    </div>
+
+    <!-- Product Table -->
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-success text-white">
+
+            <h5 class="mb-0">
+                {{ _('product_list') }}
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th>#</th>
+                            <th>{{ _('image') }}</th>
+                            <th>{{ _('product') }}</th>
+                            <th>{{ _('category') }}</th>
+                            <th>{{ _('price') }}</th>
+                            <th>{{ _('quantity') }}</th>
+                            <th>{{ _('status') }}</th>
+                            <th class="text-center">{{ _('actions') }}</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for product in products %}
+                        <tr>
+
+                            <td>{{ loop.index }}</td>
+
+                            <td>
+                                <img src="{{ url_for('static', filename='uploads/' + product.image if product.image else 'uploads/products/default.jpg') }}"
+                                     class="img-thumbnail"
+                                     width="70"
+                                     alt="{{ _('product') }}">
+                            </td>
+
+                            <td>{{ product.title }}</td>
+
+                            <td>{{ product.category.name if product.category else 'N/A' }}</td>
+
+                            <td>₹{{ product.price }} / {{ product.unit }}</td>
+
+                            <td>{{ product.quantity }} {{ product.unit }}</td>
+
+                            <td>
+                                <span class="badge {% if product.status == 'Available' %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {{ _('available') if product.status == 'Available' else product.status }}
+                                </span>
+                            </td>
+
+                            <td class="text-center">
+
+                                <a href="/farmer/product/{{ product.id }}"
+                                   class="btn btn-info btn-sm">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+
+                                <a href="/farmer/product/edit/{{ product.id }}"
+                                   class="btn btn-warning btn-sm">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+
+                                <a href="/farmer/product/delete/{{ product.id }}"
+                                   class="btn btn-danger btn-sm"
+                                   onclick="return confirm('{{ _('confirm_delete_product') }}')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+
+                            </td>
+
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">{{ _('no_products_found') }}</td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

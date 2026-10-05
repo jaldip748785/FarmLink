@@ -1,0 +1,43 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Edit Category | Admin | FarmLink{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-header bg-warning text-dark py-3 d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0 fw-bold">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Edit Category - {{ category.name }}
+                    </h4>
+                    <a href="{{ url_for('admin.categories') }}" class="btn btn-outline-dark btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Categories
+                    </a>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('admin.edit_category', id=category.id) }}">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Category Name</label>
+                            <input type="text" class="form-control" name="name" value="{{ category.name }}" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Description</label>
+                            <textarea class="form-control" name="description" rows="4">{{ category.description if category.description else '' }}</textarea>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-warning btn-lg px-5">
+                                <i class="bi bi-save-fill me-1"></i> Save Changes
+                            </button>
+                            <a href="{{ url_for('admin.categories') }}" class="btn btn-secondary btn-lg px-4 ms-2">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

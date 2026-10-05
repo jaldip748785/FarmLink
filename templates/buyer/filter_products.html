@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Filter Products | FarmLink{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Filter Controls Sidebar -->
+        <div class="col-lg-3 mb-4">
+            <div class="card shadow-sm border-0 rounded-3 p-4 bg-white">
+                <h4 class="fw-bold mb-3"><i class="bi bi-funnel-fill text-success"></i> {{ _('filter') }}</h4>
+                
+                <form method="GET" action="/buyer/filter">
+                    <!-- Category Filter -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">{{ _('category') }}</label>
+                        <select class="form-select" name="category">
+                            <option value="">{{ _('all_categories') }}</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}" {% if request.args.get('category')|int == cat.id %}selected{% endif %}>{{ _(cat.name) }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- District Filter -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">{{ _('district') }}</label>
+                        <select class="form-select" name="district" id="districtSelect">
+                            <option value="">{{ _('all_districts') }}</option>
+                            {% for dist in districts %}
+                                <option value="{{ dist.id }}" {% if request.args.get('district')|int == dist.id %}selected{% endif %}>{{ dist.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Taluka Filter -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">{{ _('taluka') }}</label>
+                        <select class="form-select" name="taluka" id="talukaSelect">
+                            <option value="">{{ _('all_talukas') }}</option>
+                            {% for tal in talukas %}
+                                {% if request.args.get('district')|int == tal.district_id %}
+                                    <option value="{{ tal.id }}" {% if request.args.get('taluka')|int == tal.id %}selected{% endif %}>{{ tal.name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Village Filter -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">{{ _('village') }}</label>
+                        <select class="form-select" name="village" id="villageSelect">
+                            <option value="">{{ _('all_villages') }}</option>
+                            {% for vil in villages %}
+                                {% if request.args.get('taluka')|int == vil.taluka_id %}
+                                    <option value="{{ vil.id }}" {% if request.args.get('village')|int == vil.id %}selected{% endif %}>{{ vil.name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-filter"></i> {{ _('apply_filters') }}
+                        </button>
+                        <a href="/buyer/filter" class="btn btn-outline-secondary">
+                            {{ _('reset_filters') }}
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Filtered Listings Grid -->
+        <div class="col-lg-9">
+            <h3 class="fw-bold mb-4 text-success">{{ _('filtered_products') }}</h3>
+
+            <div class="row g-4">
+                {% for product in products %}
+                <!-- Product Card -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm border-0 h-100 rounded-3 overflow-hidden d-flex flex-column">
+                        <img src="{{ url_for('static', filename='uploads/' + product.image if product.image else 'uploads/products/default.jpg') }}"
+                             class="card-img-top"
+                             alt="Product Image"
+                             style="height: 200px; object-fit: cover;">
+                        <div class="card-body p-3 d-flex flex-column">
+                            <span class="badge bg-success-subtle text-success align-self-start mb-2">
+                                {{ product.category.name if product.category else 'N/A' }}
+                            </span>
+                            <h5 class="card-title fw-bold mb-1">{{ product.title }}</h5>
+                            <p class="card-text text-muted small flex-grow-1">{{ product.description }}</p>
+                            
+                            <h4 class="text-success fw-bold">₹{{ product.price }} <small class="text-muted fs-6">/ {{ product.unit }}</small></h4>
+                            <hr>
+                            <p class="mb-1 small">
+                                <i class="bi bi-person-fill text-success"></i> <strong>{{ _('seller') }}:</strong> {{ product.farmer.full_name if product.farmer else 'N/A' }}
+                            </p>
+                            <p class="mb-1 small">
+                                <i class="bi bi-box-seam text-success"></i> <strong>{{ _('quantity') }}:</strong> {{ product.quantity }} {{ product.unit }}
+                            </p>
+                            <p class="mb-3 small">
+                                <i class="bi bi-geo-alt-fill text-danger"></i> 
+                                {{ product.village.name if product.village else '' }} {{ product.taluka.name if product.taluka else '' }} {{ product.district.name if product.district else '' }}
+                            </p>
+
+                            <a href="/buyer/product/{{ product.id }}" class="btn btn-success w-100 mt-auto">
+                                <i class="bi bi-eye-fill"></i> {{ _('view_details') }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="col-12 text-center py-5">
+                    <div class="alert alert-info rounded-3 py-5">
+                        <i class="bi bi-exclamation-circle display-4 text-info mb-3 d-block"></i>
+                        <h5>{{ _('no_products_match_filters') }}</h5>
+                        <p class="mb-0 text-muted">{{ _('try_removing_filters') }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.getElementById('districtSelect').addEventListener('change', function() {
+    const districtId = this.value;
+    const talukaSelect = document.getElementById('talukaSelect');
+    const villageSelect = document.getElementById('villageSelect');
+    
+    talukaSelect.innerHTML = '<option value="">All Talukas</option>';
+    villageSelect.innerHTML = '<option value="">All Villages</option>';
+    
+    if (!districtId) return;
+    
+    fetch(`/api/talukas/${districtId}`)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(taluka => {
+                const option = document.createElement('option');
+                option.value = taluka.id;
+                option.textContent = taluka.name;
+                talukaSelect.appendChild(option);
+            });
+        })
+        .catch(err => console.error('Error fetching talukas:', err));
+});
+
+document.getElementById('talukaSelect').addEventListener('change', function() {
+    const talukaId = this.value;
+    const villageSelect = document.getElementById('villageSelect');
+    
+    villageSelect.innerHTML = '<option value="">All Villages</option>';
+    
+    if (!talukaId) return;
+    
+    fetch(`/api/villages/${talukaId}`)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(village => {
+                const option = document.createElement('option');
+                option.value = village.id;
+                option.textContent = village.name;
+                villageSelect.appendChild(option);
+            });
+        })
+        .catch(err => console.error('Error fetching villages:', err));
+});
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Farmer Verification | FarmLink Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Farmer Verification Requests</h2>
+            <p class="text-muted mb-0">Review submitted land details and documents.</p>
+        </div>
+    </div>
+    <div class="table-responsive bg-white rounded shadow-sm">
+        <table class="table align-middle mb-0">
+            <thead><tr><th>Farmer</th><th>Documents</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+            {% for verification in verifications %}
+                <tr>
+                    <td>{{ verification.farmer.full_name }}</td>
+                    <td>7/12 and Adhar card</td>
+                    <td><span class="badge {% if verification.status == 'PENDING' %}bg-warning text-dark{% elif verification.status == 'APPROVED' %}bg-success{% else %}bg-danger{% endif %}">{{ verification.status }}</span></td>
+                    <td><a class="btn btn-sm btn-outline-success" href="{{ url_for('admin.farmer_verification_detail', verification_id=verification.id) }}">Review</a></td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4" class="text-center py-4">No farmer verification requests found.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

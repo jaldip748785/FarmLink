@@ -1,0 +1,400 @@
+/* ==========================================
+   FarmLink Forms Enhancement
+========================================== */
+
+/* Form Container */
+.form-container {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+
+.form-container h1,
+.form-container h2,
+.form-container h3 {
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+/* Labels - Make them more visible and farmer-friendly */
+.form-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-label .required {
+    color: #ef4444;
+}
+
+/* Input Fields - Large, easy to tap on mobile */
+.form-control {
+    font-size: 1rem;
+    padding: 0.875rem 1rem;
+    height: auto;
+    min-height: 48px;
+    border: 2px solid #e2e8f0;
+    background: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 0.3rem rgba(34, 197, 94, 0.1);
+    outline: none;
+}
+
+.form-control::placeholder {
+    color: #94a3b8;
+    font-size: 0.95rem;
+}
+
+/* Select Fields */
+.form-select {
+    font-size: 1rem;
+    padding: 0.875rem 1rem;
+    padding-right: 2.5rem;
+    height: auto;
+    min-height: 48px;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 16px 12px;
+    padding-right: 2.5rem;
+}
+
+.form-select:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 0.3rem rgba(34, 197, 94, 0.1);
+}
+
+/* Textarea */
+textarea.form-control {
+    resize: vertical;
+    min-height: 120px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Form Validation */
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: #ef4444;
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 0.3rem rgba(239, 68, 68, 0.1);
+}
+
+.form-control.is-valid,
+.form-select.is-valid {
+    border-color: #22c55e;
+}
+
+.form-control.is-valid:focus,
+.form-select.is-valid:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 0.3rem rgba(34, 197, 94, 0.1);
+}
+
+/* Error Messages */
+.invalid-feedback,
+.error-message {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    display: block;
+}
+
+.valid-feedback {
+    color: #22c55e;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    display: block;
+}
+
+/* Help Text */
+.form-text,
+.help-text {
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: block;
+}
+
+/* Checkboxes */
+.form-check {
+    padding-left: 0;
+    margin-bottom: 1rem;
+}
+
+.form-check-input {
+    width: 20px;
+    height: 20px;
+    margin-top: 0.25rem;
+    border: 2px solid #cbd5e1;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.form-check-input:checked {
+    background-color: #22c55e;
+    border-color: #22c55e;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l5-5'/%3e%3c/svg%3e");
+}
+
+.form-check-input:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 0.3rem rgba(34, 197, 94, 0.1);
+}
+
+.form-check-label {
+    margin-left: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+    font-weight: 500;
+    color: #1e293b;
+}
+
+/* Radio Buttons */
+.form-check-input[type="radio"] {
+    border-radius: 50%;
+}
+
+/* File Input */
+.form-file-input {
+    display: none;
+}
+
+.form-file-label {
+    display: inline-block;
+    padding: 1rem 1.5rem;
+    background: #f8fafc;
+    border: 2px dashed #cbd5e1;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    width: 100%;
+}
+
+.form-file-label:hover {
+    border-color: #22c55e;
+    background: #f0fdf4;
+}
+
+.form-file-label i {
+    font-size: 2rem;
+    color: #22c55e;
+    margin-bottom: 0.5rem;
+}
+
+.form-file-label .file-text {
+    display: block;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.form-file-label .file-hint {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+/* Form Row */
+.form-row {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.form-row-2 {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.form-row-3 {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.form-actions button,
+.form-actions a {
+    flex: 1;
+}
+
+.form-actions .btn-secondary {
+    background: #f1f5f9;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+}
+
+.form-actions .btn-secondary:hover {
+    background: #e2e8f0;
+}
+
+/* Input Groups */
+.input-group {
+    height: 48px;
+}
+
+.input-group-text {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.input-group .form-control {
+    border-left: none;
+}
+
+/* Floating Labels (for modern forms) */
+.form-floating > .form-control,
+.form-floating > .form-select {
+    height: calc(3.5rem + 2px);
+}
+
+.form-floating > label {
+    color: #94a3b8;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label,
+.form-floating > .form-select ~ label {
+    color: #22c55e;
+}
+
+/* Field Group Containers */
+.field-group {
+    background: #fafbfc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #22c55e;
+}
+
+.field-group h5 {
+    color: #1e293b;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Disabled Fields */
+.form-control:disabled,
+.form-select:disabled {
+    background-color: #f1f5f9;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Focus Within Container */
+.form-group:focus-within .form-label {
+    color: #22c55e;
+}
+
+/* Success State Animation */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-success {
+    animation: slideIn 0.3s ease;
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+    .form-container {
+        padding: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .form-control,
+    .form-select {
+        font-size: 16px; /* Prevents zoom on iOS */
+        min-height: 44px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions button,
+    .form-actions a {
+        width: 100%;
+    }
+
+    .form-row-2,
+    .form-row-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .form-file-label {
+        padding: 1.5rem 1rem;
+    }
+}
+
+/* Accessibility */
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+}
+
+/* Tooltip for help */
+.form-label .help-icon {
+    cursor: help;
+    color: #0ea5e9;
+    font-size: 0.85rem;
+    margin-left: 0.25rem;
+}
+
+/* Placeholder visibility */
+input::placeholder,
+textarea::placeholder {
+    opacity: 0.6;
+}
+
+/* Horizontal Forms */
+.form-horizontal .form-label {
+    text-align: right;
+    padding-right: 1rem;
+}

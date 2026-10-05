@@ -1,0 +1,188 @@
+/* ==========================================
+   FarmLink Farmer CSS
+========================================== */
+
+/* Base */
+
+body{
+    background:#f8f9fa;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+/* Dashboard Title */
+
+.page-title{
+    font-size:28px;
+    font-weight:bold;
+    color:#198754;
+}
+
+.page-subtitle{
+    color:#6c757d;
+}
+
+/* Dashboard Cards */
+
+.dashboard-card{
+    border:none;
+    border-radius:15px;
+    padding:20px;
+    background:#ffffff;
+    box-shadow:0 6px 18px rgba(0,0,0,0.08);
+    transition:0.3s;
+}
+
+.dashboard-card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 12px 25px rgba(0,0,0,0.12);
+}
+
+.dashboard-card i{
+    font-size:40px;
+    color:#198754;
+}
+
+.dashboard-card h3{
+    margin-top:10px;
+    font-weight:bold;
+}
+
+/* Add Product Form */
+
+.form-card{
+    border:none;
+    border-radius:15px;
+    padding:25px;
+    background:#ffffff;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+}
+
+.form-label{
+    font-weight:600;
+    color:#333;
+}
+
+.form-control,
+.form-select{
+    height:45px;
+    border-radius:8px;
+}
+
+textarea.form-control{
+    min-height:120px;
+}
+
+/* Buttons */
+
+.btn-success{
+    border-radius:8px;
+    font-weight:600;
+}
+
+.btn-warning{
+    border-radius:8px;
+    font-weight:600;
+    color:#fff;
+}
+
+.btn-danger{
+    border-radius:8px;
+    font-weight:600;
+}
+
+/* My Products Table */
+
+.table{
+    background:#fff;
+    border-radius:12px;
+    overflow:hidden;
+}
+
+.table thead{
+    background:#198754;
+    color:#fff;
+}
+
+.table tbody tr:hover{
+    background:#f2fff6;
+}
+
+/* Product Image */
+
+.product-img{
+    width:70px;
+    height:70px;
+    object-fit:cover;
+    border-radius:10px;
+}
+
+/* Status Badges */
+
+.badge-available{
+    background:#198754;
+    padding:6px 10px;
+    border-radius:6px;
+}
+
+.badge-out{
+    background:#dc3545;
+    padding:6px 10px;
+    border-radius:6px;
+}
+
+/* Profile Page */
+
+.profile-card{
+    border:none;
+    border-radius:15px;
+    padding:25px;
+    background:#ffffff;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+    text-align:center;
+}
+
+.profile-img{
+    width:140px;
+    height:140px;
+    border-radius:50%;
+    object-fit:cover;
+    border:4px solid #198754;
+}
+
+.profile-name{
+    font-size:22px;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+.profile-info{
+    color:#6c757d;
+    font-size:14px;
+}
+
+/* Form Focus */
+
+.form-control:focus,
+.form-select:focus{
+    border-color:#198754;
+    box-shadow:0 0 0 .2rem rgba(25,135,84,.2);
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+    .dashboard-card{
+        margin-bottom:20px;
+    }
+
+    .profile-img{
+        width:110px;
+        height:110px;
+    }
+
+    .page-title{
+        font-size:22px;
+    }
+
+}

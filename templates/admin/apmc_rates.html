@@ -1,0 +1,67 @@
+{% extends "base_admin.html" %}
+
+{% block title %}APMC Rates | Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-1">APMC Market Rates</h3>
+        <p class="text-muted mb-0">Track daily market prices for commodities.</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap align-items-center">
+        <form method="POST" action="{{ url_for('admin.sync_apmc_rates') }}">
+            <button type="submit" class="btn btn-outline-primary">
+                <i class="bi bi-cloud-arrow-down"></i> Sync Now
+            </button>
+        </form>
+        <a href="{{ url_for('admin.add_apmc_rate') }}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Add Rate
+        </a>
+    </div>
+</div>
+
+<div class="card shadow border-0">
+    <div class="card-body p-0">
+        {% if rates %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Commodity</th>
+                        <th>Category</th>
+                        <th>Market</th>
+                        <th>State</th>
+                        <th>District</th>
+                        <th>Modal</th>
+                        <th>Min</th>
+                        <th>Max</th>
+                        <th>Date</th>
+                        <th>Source</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rate in rates %}
+                    <tr>
+                        <td>{{ rate.commodity_name }}</td>
+                        <td>{{ rate.category.name if rate.category else 'Uncategorized' }}</td>
+                        <td>{{ rate.market_name }}</td>
+                        <td>{{ rate.state or '-' }}</td>
+                        <td>{{ rate.district.name if rate.district else '-' }}</td>
+                        <td>₹{{ rate.modal_price }}</td>
+                        <td>₹{{ rate.minimum_price or '-' }}</td>
+                        <td>₹{{ rate.maximum_price or '-' }}</td>
+                        <td>{{ rate.rate_date }}</td>
+                        <td>{{ rate.source or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-4 text-center text-muted">
+            No APMC rates added yet. Start by adding the first market rate.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

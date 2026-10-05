@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('add_product') }} | FarmLink{% endblock %}
+
+{% block extra_css %}
+<style>
+    .glass-card { background: rgba(255,255,255,0.97); border-radius: 1rem; box-shadow: 0 8px 24px rgba(0,0,0,0.08); overflow: hidden; }
+    .gradient-header { background: linear-gradient(135deg, #198754 0%, #20c997 100%); padding: 1.25rem 1.5rem; }
+    .form-control, .form-select { border-radius: 0.65rem; padding: 0.75rem 0.9rem; }
+    .form-label { font-weight: 600; color: #2f3b2f; margin-bottom: 0.4rem; }
+    .location-box { background: #f8f9fa; border-left: 4px solid #198754; border-radius: 0.75rem; padding: 1rem 1.1rem; }
+    @media (max-width: 768px) { .card-body { padding: 1.25rem !important; } .btn-lg { width: 100%; margin-top: 0.5rem; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4 py-lg-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card glass-card">
+                <div class="card-header gradient-header text-white">
+                    <h2 class="mb-1 fw-bold"><i class="bi bi-box-seam me-2"></i>{{ _('add_new_product') }}</h2>
+                    <p class="mb-0 small text-white-50">{{ _('add_product_desc') }}</p>
+                </div>
+                <div class="card-body p-4 p-lg-5">
+                    <form id="add-product-form" method="POST" action="#" enctype="multipart/form-data" novalidate>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">{{ _('product_name') }}</label>
+                                <input id="product-title" type="text" class="form-control" name="title" value="{{ form_data.get('title', '') }}" placeholder="{{ _('enter_product_name') }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ _('category') }}</label>
+                                <select id="product-category" class="form-select" name="category_id" required>
+                                    <option value="">{{ _('select_category') }}</option>
+                                    {% for category in categories %}<option value="{{ category.id }}" {% if form_data.get('category_id') == category.id|string %}selected{% endif %}>{{ _(category.name) }}</option>{% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ _('price_rupee') }}</label>
+                                <input id="product-price" type="number" class="form-control" name="price" value="{{ form_data.get('price', '') }}" placeholder="{{ _('enter_price') }}" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">{{ _('available_quantity') }}</label>
+                                <input id="product-quantity" type="number" class="form-control" name="quantity" value="{{ form_data.get('quantity', '') }}" placeholder="100" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">{{ _('unit') }}</label>
+                                <select id="product-unit" class="form-select" name="unit" required>
+                                    <option value="">{{ _('select_unit') }}</option>
+                                    <option value="Maund" {% if form_data.get('unit') == 'Maund' %}selected{% endif %}>{{ _('maund') }}</option>
+                                    <option value="Kg" {% if form_data.get('unit') == 'Kg' %}selected{% endif %}>{{ _('kg') }}</option>
+                                    <option value="Quintal" {% if form_data.get('unit') == 'Quintal' %}selected{% endif %}>{{ _('quintal') }}</option>
+                                    <option value="Ton" {% if form_data.get('unit') == 'Ton' %}selected{% endif %}>{{ _('ton') }}</option>
+                                    <option value="Litre" {% if form_data.get('unit') == 'Litre' %}selected{% endif %}>{{ _('litre') }}</option>
+                                    <option value="Piece" {% if form_data.get('unit') == 'Piece' %}selected{% endif %}>{{ _('piece') }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ _('allow_bargaining') }}</label>
+                                <select class="form-select" name="allow_bargaining" onchange="toggleMinPrice(this.value)">
+                                    <option value="0">{{ _('no') }}</option>
+                                    <option value="1">{{ _('yes') }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6" id="minPriceGroup" style="display:none;">
+                                <label class="form-label">{{ _('min_acceptable_price') }}</label>
+                                <input type="number" class="form-control" id="minPriceInput" name="min_price" placeholder="{{ _('enter_min_acceptable_price') }}" step="any" value="{{ form_data.get('min_price', '0.00') }}">
+                                <div class="form-text text-muted mt-2"><i class="bi bi-info-circle me-1"></i>{{ _('min_price_private_desc') }}</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">{{ _('product_image') }}</label>
+                                <input id="product-image" type="file" class="form-control" name="image" accept="image/*" capture="environment">
+                                <div class="form-text text-muted mt-2">{{ _('select_photo') }} / {{ _('take_photo') }}</div>
+                            </div>
+                            <div class="col-12">
+                                <div class="location-box">
+                                    <h6 class="mb-1 text-success fw-bold">{{ _('location_from_profile') }}</h6>
+                                    <p class="mb-0 text-secondary small">
+                                        {% if current_user.village %}{{ current_user.village.name }}, {% endif %}{% if current_user.taluka %}{{ current_user.taluka.name }}, {% endif %}{% if current_user.district %}{{ current_user.district.name }}{% endif %}{% if current_user.address %} • {{ current_user.address }}{% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">{{ _('product_description') }}</label>
+                                <textarea id="product-description" class="form-control" rows="4" name="description" placeholder="{{ _('write_product_description') }}">{{ form_data.get('description', '') }}</textarea>
+                            </div>
+                        </div>
+                        <div id="add-product-alert" class="alert alert-danger d-none" role="alert"></div>
+                        <div class="mt-4 d-flex flex-column flex-md-row gap-2">
+                            <button type="submit" class="btn btn-success btn-lg"><i class="bi bi-cloud-upload-fill me-2"></i>{{ _('submit_product') }}</button>
+                            <a href="/farmer/dashboard" class="btn btn-outline-secondary btn-lg">{{ _('cancel') }}</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleMinPrice(val) {
+    const group = document.getElementById('minPriceGroup');
+    const input = document.getElementById('minPriceInput');
+    if (val === '1') { group.style.display = 'block'; input.setAttribute('required','required'); }
+    else { group.style.display = 'none'; input.removeAttribute('required'); input.value='0.00'; }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('add-product-form');
+    const alertBox = document.getElementById('add-product-alert');
+    form.addEventListener('submit', function(event) {
+        alertBox.classList.add('d-none');
+        const title = document.getElementById('product-title').value.trim();
+        const category = document.getElementById('product-category').value;
+        const quantity = document.getElementById('product-quantity').value.trim();
+        const unit = document.getElementById('product-unit').value;
+        const price = document.getElementById('product-price').value.trim();
+        const image = document.getElementById('product-image').files;
+
+        if (!title) {
+            showError('{{ _('required_product_name') }}');
+            event.preventDefault();
+            return;
+        }
+        if (!category) {
+            showError('{{ _('required_category') }}');
+            event.preventDefault();
+            return;
+        }
+        if (!quantity) {
+            showError('{{ _('required_quantity') }}');
+            event.preventDefault();
+            return;
+        }
+        if (isNaN(quantity) || Number(quantity) <= 0) {
+            showError('{{ _('invalid_quantity') }}');
+            event.preventDefault();
+            return;
+        }
+        if (!unit) {
+            showError('{{ _('required_unit') }}');
+            event.preventDefault();
+            return;
+        }
+        if (!price) {
+            showError('{{ _('required_price') }}');
+            event.preventDefault();
+            return;
+        }
+        if (isNaN(price) || Number(price) <= 0) {
+            showError('{{ _('invalid_price') }}');
+            event.preventDefault();
+            return;
+        }
+        if (!image || image.length === 0) {
+            showError('{{ _('required_image') }}');
+            event.preventDefault();
+            return;
+        }
+    });
+
+    function showError(message) {
+        alertBox.textContent = message;
+        alertBox.classList.remove('d-none');
+    }
+});
+</script>
+{% endblock %}

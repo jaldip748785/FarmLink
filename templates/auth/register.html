@@ -1,0 +1,603 @@
+{% extends "base.html" %}
+
+{% block title %}Register | FarmLink{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow-lg border-0 rounded-4">
+
+                <!-- Header -->
+                <div class="card-header bg-success text-white text-center py-4">
+
+                    <h2 class="fw-bold">
+                        <i class="bi bi-person-plus-fill"></i>
+                        {{ _('create_account') }}
+                    </h2>
+
+                    <p class="mb-0">
+                        {{ _('join_today') }}
+                    </p>
+
+                </div>
+
+                <!-- Form -->
+                <div class="card-body p-4">
+
+                    <form id="registerForm" method="POST" action="#" enctype="multipart/form-data">
+
+                        <!-- User Type -->
+                        <div class="mb-4">
+
+                            <label class="form-label fw-bold">
+                                {{ _('role') }}
+                            </label>
+
+                            <select class="form-select" name="user_type" required>
+                                <option value="">{{ _('select_role') }}</option>
+                                <option value="farmer">{{ _('farmer') }}</option>
+                                <option value="buyer">{{ _('buyer') }}</option>
+                            </select>
+
+                        </div>
+
+                        <div class="row">
+
+                            <!-- Full Name -->
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    {{ _('full_name') }}
+                                </label>
+
+                                <input type="text"
+                                       class="form-control"
+                                       name="full_name"
+                                       placeholder="Enter full name"
+                                       required>
+
+                            </div>
+
+                            <!-- Mobile -->
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    {{ _('phone_number') }}
+                                </label>
+
+                                <input type="tel"
+                                       class="form-control"
+                                       name="mobile"
+                                       placeholder="Enter mobile number"
+                                       required>
+
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    {{ _('email') }}
+                                </label>
+
+                                <input type="email"
+                                       class="form-control"
+                                       name="email"
+                                       placeholder="Enter email"
+                                       required>
+
+                            </div>
+
+                            <!-- Password -->
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    {{ _('password') }}
+                                </label>
+
+                                <input type="password"
+                                       class="form-control"
+                                       name="password"
+                                       placeholder="Create password"
+                                       required>
+
+                            </div>
+
+                            <!-- Confirm Password -->
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    {{ _('confirm_password') }}
+                                </label>
+
+                                <input type="password"
+                                       class="form-control"
+                                       name="confirm_password"
+                                       placeholder="Confirm password"
+                                       required>
+
+                            </div>
+
+                            <!-- District -->
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    {{ _('district') }}
+                                </label>
+
+                                <select class="form-select" name="district" id="districtSelect">
+                                    <option value="">Select District</option>
+                                    {% for district in districts %}
+                                        <option value="{{ district.id }}">{{ district.name }}</option>
+                                    {% endfor %}
+                                </select>
+
+                            </div>
+
+                            <!-- Taluka -->
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    {{ _('taluka') }}
+                                </label>
+
+                                <select class="form-select" name="taluka" id="talukaSelect">
+                                    <option value="">Select Taluka</option>
+                                </select>
+
+                            </div>
+
+                            <!-- Village -->
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    {{ _('village') }}
+                                </label>
+
+                                <select class="form-select" name="village" id="villageSelect">
+                                    <option value="">Select Village</option>
+                                </select>
+
+                            </div>
+
+                            <!-- Detailed Address -->
+                            <div class="col-12 mb-3">
+
+                                <label class="form-label">
+                                    {{ _('address') }}
+                                </label>
+
+                                <textarea class="form-control"
+                                          name="address"
+                                          rows="2"
+                                          placeholder="Enter your detailed street or farm address"></textarea>
+
+                            </div>
+
+                            <div id="farmerVerificationFields" class="row d-none">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold" for="landDocument712Gallery">7/12 દસ્તાવેજ</label>
+                                    <div class="d-grid gap-2">
+                                        <label class="btn btn-outline-success" for="landDocument712Gallery">
+                                            <i class="bi bi-folder2-open"></i> ગેલેરીમાંથી પસંદ કરો
+                                        </label>
+                                        <input id="landDocument712Gallery" class="d-none document-upload-input" type="file" name="land_document_712" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" multiple data-document="712">
+                                        <button type="button" class="btn btn-success document-camera-button" data-document="712">
+                                            <i class="bi bi-camera-fill"></i> Start Desktop Camera
+                                        </button>
+                                    </div>
+                                    <small class="form-text text-muted d-block mt-2">દસ્તાવેજને સીધો રાખો અને આખો પેજ સ્પષ્ટ રીતે ફોટો લો.</small>
+                                    <div id="documentPreview712" class="document-preview mt-3 d-none">
+                                        <img class="img-fluid rounded border" alt="7/12 document preview">
+                                        <div class="d-flex gap-2 mt-2">
+                                            <button type="button" class="btn btn-sm btn-outline-success document-retake mb-0" data-document="712"><i class="bi bi-arrow-repeat"></i> ફરી ફોટો લો</button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger document-remove" data-document="712"><i class="bi bi-trash"></i> ફોટો દૂર કરો</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold" for="landDocument8aGallery">Adhar card</label>
+                                    <div class="d-grid gap-2">
+                                        <label class="btn btn-outline-success" for="landDocument8aGallery">
+                                            <i class="bi bi-folder2-open"></i> ગેલેરીમાંથી પસંદ કરો
+                                        </label>
+                                        <input id="landDocument8aGallery" class="d-none document-upload-input" type="file" name="land_document_8a" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" multiple data-document="8a">
+                                        <button type="button" class="btn btn-success document-camera-button" data-document="8a">
+                                            <i class="bi bi-camera-fill"></i> Start Desktop Camera
+                                        </button>
+                                    </div>
+                                    <small class="form-text text-muted d-block mt-2">દસ્તાવેજને સીધો રાખો અને આખો પેજ સ્પષ્ટ રીતે ફોટો લો.</small>
+                                    <div id="documentPreview8a" class="document-preview mt-3 d-none">
+                                        <img class="img-fluid rounded border" alt="Adhar card preview">
+                                        <div class="d-flex gap-2 mt-2">
+                                            <button type="button" class="btn btn-sm btn-outline-success document-retake mb-0" data-document="8a"><i class="bi bi-arrow-repeat"></i> ફરી ફોટો લો</button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger document-remove" data-document="8a"><i class="bi bi-trash"></i> फोटो દૂર કરો</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <small class="text-muted">JPG, JPEG, PNG અથવા WEBP. દરેક ફાઇલ વધુમાં વધુ 5 MB.</small>
+                                </div>
+                            </div>
+
+                            <!-- Captcha -->
+                            <div class="col-12 mb-3">
+
+                                <label class="form-label">
+                                    Verification Code
+                                </label>
+
+                                <div class="input-group">
+                                    <span class="input-group-text fw-semibold bg-light">{{ captcha_question }}</span>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        name="captcha_answer"
+                                        placeholder="Enter answer"
+                                        required>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Terms -->
+                        <div class="form-check mb-4">
+
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   id="terms"
+                                   required>
+
+                            <label class="form-check-label" for="terms">
+                                I agree to the Terms & Conditions and Privacy Policy.
+                            </label>
+
+                        </div>
+
+                        <!-- Register Button -->
+                        <div class="d-grid">
+
+                            <button type="submit"
+                                    class="btn btn-success btn-lg">
+
+                                <i class="bi bi-person-check-fill"></i>
+                                {{ _('register') }}
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+                <!-- Footer -->
+                <div class="card-footer text-center">
+
+                    <p class="mb-0">
+
+                        {{ _('already_account') }}
+
+                        <a href="/auth/login"
+                           class="text-success text-decoration-none fw-semibold">
+
+                            {{ _('login_here') }}
+
+                        </a>
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="modal fade" id="cameraCaptureModal" tabindex="-1" aria-labelledby="cameraCaptureTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cameraCaptureTitle">દસ્તાવેજનો ફોટો લો</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <video id="cameraVideo" class="w-100 rounded bg-dark" autoplay playsinline></video>
+                <canvas id="cameraCanvas" class="d-none"></canvas>
+                <img id="cameraShotPreview" class="w-100 rounded border d-none" alt="Captured document preview">
+                <p id="cameraStatus" class="text-center text-muted mt-3 mb-0">Camera permission is required.</p>
+                <p id="cameraError" class="alert alert-danger d-none mt-3 mb-0"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">રદ કરો</button>
+                <button type="button" class="btn btn-outline-success" id="startCameraButton"><i class="bi bi-camera-video"></i> Start Camera</button>
+                <button type="button" class="btn btn-success d-none" id="capturePhotoButton"><i class="bi bi-camera-fill"></i> Capture Photo</button>
+                <button type="button" class="btn btn-outline-success d-none" id="retakePhotoButton"><i class="bi bi-arrow-repeat"></i> Retake Photo</button>
+                <button type="button" class="btn btn-outline-danger d-none" id="stopCameraButton"><i class="bi bi-stop-circle"></i> Stop Camera</button>
+                <button type="button" class="btn btn-success d-none" id="confirmPhotoButton"><i class="bi bi-check-lg"></i> Use This Photo</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.getElementById('districtSelect').addEventListener('change', function() {
+    const districtId = this.value;
+    const talukaSelect = document.getElementById('talukaSelect');
+    const villageSelect = document.getElementById('villageSelect');
+    
+    talukaSelect.innerHTML = '<option value="">Select Taluka</option>';
+    villageSelect.innerHTML = '<option value="">Select Village</option>';
+    
+    if (!districtId) return;
+    
+    fetch(`/api/talukas/${districtId}`)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(taluka => {
+                const option = document.createElement('option');
+                option.value = taluka.id;
+                option.textContent = taluka.name;
+                talukaSelect.appendChild(option);
+            });
+        })
+        .catch(err => console.error('Error fetching talukas:', err));
+});
+
+const roleSelect = document.querySelector('select[name="user_type"]');
+const verificationFields = document.getElementById('farmerVerificationFields');
+const verificationInputs = verificationFields.querySelectorAll('input, select');
+function updateFarmerFields() {
+    const isFarmer = roleSelect.value === 'farmer';
+    verificationFields.classList.toggle('d-none', !isFarmer);
+    verificationInputs.forEach(input => input.required = isFarmer);
+}
+roleSelect.addEventListener('change', updateFarmerFields);
+updateFarmerFields();
+
+function setupDocumentCapture(documentKey) {
+    const uploadInput = document.querySelector(`[data-document="${documentKey}"].document-upload-input`);
+    const preview = document.getElementById(`documentPreview${documentKey}`);
+    const previewImage = preview.querySelector('img');
+    let previewUrl = null;
+
+    function showPreview(file) {
+        if (!file || !file.type.startsWith('image/')) {
+            preview.classList.add('d-none');
+            return;
+        }
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        previewUrl = URL.createObjectURL(file);
+        previewImage.src = previewUrl;
+        preview.classList.remove('d-none');
+    }
+
+    uploadInput.addEventListener('change', () => showPreview(uploadInput.files[0]));
+    document.querySelector(`.document-retake[data-document="${documentKey}"]`).addEventListener('click', () => openCamera(documentKey));
+    preview.querySelector('.document-remove').addEventListener('click', () => {
+        uploadInput.value = '';
+        previewImage.removeAttribute('src');
+        preview.classList.add('d-none');
+    });
+}
+
+setupDocumentCapture('712');
+setupDocumentCapture('8a');
+
+const cameraModalElement = document.getElementById('cameraCaptureModal');
+const cameraVideo = document.getElementById('cameraVideo');
+const cameraCanvas = document.getElementById('cameraCanvas');
+const cameraShotPreview = document.getElementById('cameraShotPreview');
+const cameraStatus = document.getElementById('cameraStatus');
+const cameraError = document.getElementById('cameraError');
+const startCameraButton = document.getElementById('startCameraButton');
+const capturePhotoButton = document.getElementById('capturePhotoButton');
+const retakePhotoButton = document.getElementById('retakePhotoButton');
+const stopCameraButton = document.getElementById('stopCameraButton');
+const confirmPhotoButton = document.getElementById('confirmPhotoButton');
+let cameraStream = null;
+let activeCameraDocument = null;
+let capturedCameraBlob = null;
+
+function showCameraModal() {
+    cameraModalElement.classList.add('show');
+    cameraModalElement.style.display = 'block';
+    cameraModalElement.setAttribute('aria-hidden', 'false');
+}
+
+function hideCameraModal() {
+    cameraModalElement.classList.remove('show');
+    cameraModalElement.style.display = 'none';
+    cameraModalElement.setAttribute('aria-hidden', 'true');
+    stopCamera();
+}
+
+document.querySelectorAll('.document-camera-button').forEach(button => {
+    button.addEventListener('click', () => openCamera(button.dataset.document));
+});
+
+function resetCameraControls() {
+    capturedCameraBlob = null;
+    cameraError.classList.add('d-none');
+    cameraStatus.textContent = 'Camera permission is required.';
+    cameraShotPreview.classList.add('d-none');
+    cameraVideo.classList.remove('d-none');
+    startCameraButton.classList.remove('d-none');
+    capturePhotoButton.classList.add('d-none');
+    retakePhotoButton.classList.add('d-none');
+    stopCameraButton.classList.add('d-none');
+    confirmPhotoButton.classList.add('d-none');
+}
+
+async function startDesktopCamera() {
+    stopCamera();
+    resetCameraControls();
+    startCameraButton.classList.add('d-none');
+    cameraStatus.textContent = 'Starting desktop camera...';
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showCameraError('No desktop camera found.');
+        return;
+    }
+
+    try {
+        const streamRequest = navigator.mediaDevices.getUserMedia({ video: true });
+        const timeout = new Promise((resolve, reject) => {
+            setTimeout(() => reject(new Error('camera-timeout')), 8000);
+        });
+        cameraStream = await Promise.race([streamRequest, timeout]).catch(error => {
+            streamRequest.then(stream => stream.getTracks().forEach(track => track.stop())).catch(() => {});
+            throw error;
+        });
+        cameraVideo.srcObject = cameraStream;
+        await cameraVideo.play();
+        cameraVideo.classList.remove('d-none');
+        cameraStatus.textContent = 'Desktop camera started.';
+        capturePhotoButton.classList.remove('d-none');
+        stopCameraButton.classList.remove('d-none');
+    } catch (error) {
+        stopCamera();
+        const message = error.name === 'NotAllowedError'
+            ? 'Camera permission denied.'
+            : error.name === 'NotReadableError'
+                ? 'Camera is already being used by another application.'
+                : 'No desktop camera found.';
+        showCameraError(message);
+    }
+}
+
+function showCameraError(message) {
+    cameraStatus.textContent = '';
+    cameraError.textContent = message;
+    cameraError.classList.remove('d-none');
+    startCameraButton.classList.remove('d-none');
+    capturePhotoButton.classList.add('d-none');
+    retakePhotoButton.classList.add('d-none');
+    stopCameraButton.classList.add('d-none');
+    confirmPhotoButton.classList.add('d-none');
+}
+
+function stopCamera() {
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+    }
+    cameraVideo.srcObject = null;
+    cameraVideo.onloadedmetadata = null;
+    cameraVideo.classList.add('d-none');
+    stopCameraButton.classList.add('d-none');
+}
+
+function openCamera(documentKey) {
+    if (cameraStream) stopCamera();
+    activeCameraDocument = documentKey;
+    resetCameraControls();
+    showCameraModal();
+    startDesktopCamera();
+}
+
+startCameraButton.addEventListener('click', startDesktopCamera);
+stopCameraButton.addEventListener('click', () => {
+    stopCamera();
+    cameraStatus.textContent = 'Camera stopped.';
+    startCameraButton.classList.remove('d-none');
+});
+
+capturePhotoButton.addEventListener('click', () => {
+    if (!cameraStream || !cameraVideo.videoWidth) return;
+    cameraCanvas.width = cameraVideo.videoWidth;
+    cameraCanvas.height = cameraVideo.videoHeight;
+    cameraCanvas.getContext('2d').drawImage(cameraVideo, 0, 0);
+    cameraCanvas.toBlob(blob => {
+        if (!blob) {
+            showCameraError('Photo could not be captured.');
+            return;
+        }
+        capturedCameraBlob = blob;
+        cameraShotPreview.src = URL.createObjectURL(blob);
+        cameraShotPreview.classList.remove('d-none');
+        cameraVideo.classList.add('d-none');
+        stopCamera();
+        cameraStatus.textContent = 'Photo captured successfully.';
+        capturePhotoButton.classList.add('d-none');
+        retakePhotoButton.classList.remove('d-none');
+        confirmPhotoButton.classList.remove('d-none');
+    }, 'image/jpeg', 0.92);
+});
+
+retakePhotoButton.addEventListener('click', () => {
+    stopCamera();
+    resetCameraControls();
+    startDesktopCamera();
+});
+
+confirmPhotoButton.addEventListener('click', () => {
+    if (!capturedCameraBlob || !activeCameraDocument) return;
+    const uploadInput = document.querySelector(`[data-document="${activeCameraDocument}"].document-upload-input`);
+    const file = new File([capturedCameraBlob], `document-${activeCameraDocument}-${Date.now()}.jpg`, { type: 'image/jpeg' });
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    uploadInput.files = transfer.files;
+    uploadInput.dispatchEvent(new Event('change', { bubbles: true }));
+    hideCameraModal();
+});
+
+cameraModalElement.addEventListener('click', event => {
+    if (event.target === cameraModalElement) hideCameraModal();
+});
+
+function closeCameraSection() {
+    stopCamera();
+    activeCameraDocument = null;
+    capturedCameraBlob = null;
+    hideCameraModal();
+}
+
+cameraModalElement.querySelectorAll('[data-bs-dismiss="modal"]').forEach(button => {
+    button.addEventListener('click', closeCameraSection);
+});
+
+document.getElementById('registerForm').addEventListener('submit', function(event) {
+    stopCamera();
+    if (roleSelect.value !== 'farmer') return;
+    const missingDocument = ['712', '8a'].some(documentKey => {
+        const inputs = document.querySelectorAll(`[data-document="${documentKey}"]`);
+        return !Array.from(inputs).some(input => input.files.length);
+    });
+    if (missingDocument) {
+        event.preventDefault();
+        alert('Please select or capture both land documents.');
+    }
+});
+
+document.getElementById('talukaSelect').addEventListener('change', function() {
+    const talukaId = this.value;
+    const villageSelect = document.getElementById('villageSelect');
+    
+    villageSelect.innerHTML = '<option value="">Select Village</option>';
+    
+    if (!talukaId) return;
+    
+    fetch(`/api/villages/${talukaId}`)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(village => {
+                const option = document.createElement('option');
+                option.value = village.id;
+                option.textContent = village.name;
+                villageSelect.appendChild(option);
+            });
+        })
+        .catch(err => console.error('Error fetching villages:', err));
+});
+</script>
+{% endblock %}
+{% endblock %}

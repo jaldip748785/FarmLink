@@ -1,0 +1,32 @@
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('review-form');
+    if (!form) return;
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      const productId = form.getAttribute('data-product-id');
+      const rating = document.getElementById('review-rating').value;
+      const comment = document.getElementById('review-comment').value.trim();
+      const feedback = document.getElementById('review-feedback');
+
+      fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id: Number(productId), rating: Number(rating), comment })
+      })
+        .then(async (response) => {
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.message || 'Unable to submit review.');
+          feedback.className = 'alert alert-success';
+          feedback.textContent = payload.message;
+          form.reset();
+          setTimeout(() => window.location.reload(), 800);
+        })
+        .catch((error) => {
+          feedback.className = 'alert alert-danger';
+          feedback.textContent = error.message;
+        });
+    });
+  });
+</script>

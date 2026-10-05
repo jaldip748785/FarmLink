@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang or 'en' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title %}FarmLink - Local Farmer Marketplace{% endblock %}
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Sans+Gujarati:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Custom Style CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Forms Enhancement CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+    <!-- Components CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="site-shell bg-light d-flex flex-column min-vh-100" data-current-lang="{{ current_lang or 'en' }}">
+
+    <!-- Navbar -->
+    {% include "navbar.html" %}
+
+    <!-- Flashed Messages -->
+    <div class="container mt-3 mb-0">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow-1">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    {% include "footer.html" %}
+
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+        <div class="bg-white border rounded-pill shadow-sm px-3 py-2 d-flex align-items-center gap-2">
+            <button id="voice-toggle-btn" class="btn btn-sm btn-success rounded-pill" type="button" aria-label="{{ _('voice') }}">
+                <i class="bi bi-volume-up-fill"></i>
+                <span class="ms-1">{{ _('voice') }}</span>
+            </button>
+            <button id="voice-repeat-btn" class="btn btn-sm btn-outline-success rounded-pill" type="button" aria-label="{{ _('repeat_last') }}">
+                <i class="bi bi-repeat"></i>
+            </button>
+            <button id="voice-help-btn" class="btn btn-sm btn-outline-primary rounded-pill" type="button" aria-label="{{ _('voice_help') }}">
+                <i class="bi bi-question-circle"></i>
+            </button>
+        </div>
+        <div id="voice-status" class="small text-muted mt-2 text-end"></div>
+        <div id="voice-message-holder" data-voice-message="{{ voice_message or '' }}" data-voice-lang="{{ voice_lang or 'gu-IN' }}" data-voice-help="{{ _('voice_help_prompt') }}"></div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="logoutConfirmLabel">
+                        <i class="bi bi-exclamation-triangle"></i> {{ _('logout_confirmation') }}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">
+                        <strong>{{ _('confirm_logout') }}</strong>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-arrow-left"></i> {{ _('go_back') }}
+                    </button>
+                    <a href="/auth/logout" class="btn btn-danger">
+                        <i class="bi bi-box-arrow-right"></i> {{ _('yes_logout') }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const voiceToggleBtn = document.getElementById('voice-toggle-btn');
+        const voiceRepeatBtn = document.getElementById('voice-repeat-btn');
+        const voiceHelpBtn = document.getElementById('voice-help-btn');
+        const voiceStatus = document.getElementById('voice-status');
+        const voiceMessageHolder = document.getElementById('voice-message-holder');
+        const storageKey = 'farmlink-voice-enabled';
+        let lastVoiceMessage = '';
+        let voiceEnabled = localStorage.getItem(storageKey) !== 'false';
+        let hasSpokenOnce = false;
+
+        function updateVoiceButton() {
+            if (!voiceToggleBtn) return;
+            voiceToggleBtn.classList.toggle('btn-success', voiceEnabled);
+            voiceToggleBtn.classList.toggle('btn-outline-secondary', !voiceEnabled);
+            const icon = voiceToggleBtn.querySelector('i');
+            if (icon) {
+                icon.className = voiceEnabled ? 'bi bi-volume-up-fill' : 'bi bi-volume-mute-fill';
+            }
+            const label = voiceToggleBtn.querySelector('span');
+            if (label) {
+                label.textContent = voiceEnabled ? '{{ _('voice') }}' : '{{ _('muted') }}';
+            }
+            if (voiceStatus) {
+                voiceStatus.textContent = voiceEnabled ? '{{ _('voice_on') }}' : '{{ _('voice_off') }}';
+            }
+        }
+
+        function getPageVoiceText() {
+            const text = (voiceMessageHolder?.dataset.voiceMessage || '').trim();
+            if (!text || text.toLowerCase() === 'farmlink') return '';
+            return text;
+        }
+
+        function getAvailableVoices() {
+            return window.speechSynthesis.getVoices() || [];
+        }
+
+        function findVoiceForLang(lang) {
+            if (!('speechSynthesis' in window)) return null;
+            const voices = getAvailableVoices();
+            if (!voices.length) return null;
+            const normalized = (lang || '').toLowerCase();
+            const exact = voices.find(v => v.lang.toLowerCase() === normalized);
+            if (exact) return exact;
+            if (normalized.startsWith('gu')) {
+                return voices.find(v => v.lang.toLowerCase().startsWith('gu')) || null;
+            }
+            return null;
+        }
+
+        function speakVoice(message) {
+            if (!message || !voiceEnabled) return;
+            const normalizedMessage = message.trim();
+            if (normalizedMessage.toLowerCase() === 'farmlink') return;
+            if (!('speechSynthesis' in window)) {
+                if (voiceStatus) voiceStatus.textContent = '{{ _('speech_not_supported') }}';
+                return;
+            }
+            const utterance = new SpeechSynthesisUtterance(normalizedMessage);
+            utterance.lang = voiceMessageHolder?.dataset.voiceLang || 'gu-IN';
+            const voice = findVoiceForLang(utterance.lang);
+            if (voice) utterance.voice = voice;
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
+            lastVoiceMessage = message;
+            if (voiceStatus) voiceStatus.textContent = '{{ _('speaking') }}';
+        }
+
+        function playPendingVoice(force = false) {
+            if (!voiceEnabled && !force) return;
+            const message = getPageVoiceText();
+            if (!message) return;
+            if (hasSpokenOnce && !force) return;
+            const voices = getAvailableVoices();
+            if (!voices.length) {
+                return;
+            }
+            hasSpokenOnce = true;
+            speakVoice(message);
+        }
+
+        function tryPlayOrScheduleVoice(retryCount = 0) {
+            const played = getAvailableVoices().length && !hasSpokenOnce && getPageVoiceText();
+            if (played) {
+                playPendingVoice(false);
+                return;
+            }
+            if (retryCount >= 3) {
+                return;
+            }
+            setTimeout(() => tryPlayOrScheduleVoice(retryCount + 1), 300);
+        }
+
+        if (voiceToggleBtn) {
+            voiceToggleBtn.addEventListener('click', () => {
+                voiceEnabled = !voiceEnabled;
+                localStorage.setItem(storageKey, String(voiceEnabled));
+                updateVoiceButton();
+                if (voiceEnabled) {
+                    playPendingVoice(true);
+                }
+            });
+        }
+
+        if (voiceRepeatBtn) {
+            voiceRepeatBtn.addEventListener('click', () => {
+                if (lastVoiceMessage) {
+                    speakVoice(lastVoiceMessage);
+                }
+            });
+        }
+
+        if (voiceHelpBtn) {
+            voiceHelpBtn.addEventListener('click', () => {
+                const helpMessage = (voiceMessageHolder?.dataset.voiceHelp || '').trim() || '{{ _('voice_help_prompt') }}';
+                speakVoice(helpMessage);
+            });
+        }
+
+        window.speechSynthesis.addEventListener('voiceschanged', () => {
+            if (voiceEnabled && !hasSpokenOnce) {
+                playPendingVoice(false);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateVoiceButton();
+            tryPlayOrScheduleVoice();
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/voice_search.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

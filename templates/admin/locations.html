@@ -1,0 +1,144 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Manage Locations | FarmLink{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 gap-3 flex-wrap">
+        <div>
+            <h2><i class="bi bi-geo-alt-fill text-success me-2"></i>Manage Locations</h2>
+            <p class="text-muted mb-0">Add districts, talukas, and villages for the location dropdowns.</p>
+        </div>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addLocationModal">
+            <i class="bi bi-plus-circle me-1"></i>Add Location
+        </button>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white"><h5 class="mb-0">Districts ({{ districts|length }})</h5></div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light"><tr><th>ID</th><th>District Name</th><th>Talukas</th></tr></thead>
+                    <tbody>
+                    {% for district in districts %}
+                        <tr>
+                            <td>#{{ district.id }}</td>
+                            <td class="fw-semibold">{{ district.name }}</td>
+                            <td>{{ talukas|selectattr('district_id', 'equalto', district.id)|list|length }}</td>
+                        </tr>
+                    {% else %}<tr><td colspan="3" class="text-center py-4">No districts found.</td></tr>{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white"><h5 class="mb-0">Talukas ({{ talukas|length }})</h5></div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light"><tr><th>ID</th><th>District</th><th>Taluka Name</th><th>Villages</th></tr></thead>
+                    <tbody>
+                    {% for taluka in talukas %}
+                        <tr>
+                            <td>#{{ taluka.id }}</td>
+                            <td>{{ districts|selectattr('id', 'equalto', taluka.district_id)|map(attribute='name')|first or '-' }}</td>
+                            <td class="fw-semibold">{{ taluka.name }}</td>
+                            <td>{{ villages|selectattr('taluka_id', 'equalto', taluka.id)|list|length }}</td>
+                        </tr>
+                    {% else %}<tr><td colspan="4" class="text-center py-4">No talukas found.</td></tr>{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-white"><h5 class="mb-0">Villages ({{ villages|length }})</h5></div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light"><tr><th>ID</th><th>District</th><th>Taluka</th><th>Village Name</th></tr></thead>
+                    <tbody>
+                    {% for village in villages %}
+                        <tr>
+                            <td>#{{ village.id }}</td>
+                            <td>{{ districts|selectattr('id', 'equalto', village.district_id)|map(attribute='name')|first or '-' }}</td>
+                            <td>{{ talukas|selectattr('id', 'equalto', village.taluka_id)|map(attribute='name')|first or '-' }}</td>
+                            <td class="fw-semibold">{{ village.name }}</td>
+                        </tr>
+                    {% else %}<tr><td colspan="4" class="text-center py-4">No villages found.</td></tr>{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addLocationModal" tabindex="-1" aria-labelledby="addLocationLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="addLocationLabel">Add Location</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin.add_location') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="location-type" class="form-label">Location Type</label>
+                        <select id="location-type" name="location_type" class="form-select" required onchange="updateLocationFields(this.value)">
+                            <option value="">Select type</option>
+                            <option value="district">District</option>
+                            <option value="taluka">Taluka</option>
+                            <option value="village">Village</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 d-none" id="district-field">
+                        <label for="location-district" class="form-label">District</label>
+                        <select id="location-district" name="district_id" class="form-select">
+                            <option value="">Select district</option>
+                            {% for district in districts %}<option value="{{ district.id }}">{{ district.name }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3 d-none" id="taluka-field">
+                        <label for="location-taluka" class="form-label">Taluka</label>
+                        <select id="location-taluka" name="taluka_id" class="form-select">
+                            <option value="">Select taluka</option>
+                            {% for taluka in talukas %}<option value="{{ taluka.id }}" data-district="{{ taluka.district_id }}">{{ taluka.name }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="location-name" class="form-label">Name</label>
+                        <input id="location-name" name="name" class="form-control" required placeholder="Enter location name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success"><i class="bi bi-plus-circle me-1"></i>Save Location</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateLocationFields(type) {
+    const districtField = document.getElementById('district-field');
+    const talukaField = document.getElementById('taluka-field');
+    const districtSelect = document.getElementById('location-district');
+    const talukaSelect = document.getElementById('location-taluka');
+    districtField.classList.toggle('d-none', type === 'district' || type === '');
+    talukaField.classList.toggle('d-none', type !== 'village');
+    districtSelect.required = type === 'taluka' || type === 'village';
+    talukaSelect.required = type === 'village';
+    Array.from(talukaSelect.options).forEach(option => {
+        option.hidden = option.value && districtSelect.value && option.dataset.district !== districtSelect.value;
+    });
+}
+document.getElementById('location-district').addEventListener('change', function () {
+    updateLocationFields(document.getElementById('location-type').value);
+});
+</script>
+{% endblock %}

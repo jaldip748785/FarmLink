@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}FarmLink Admin{% endblock %}
+    </title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <!-- Admin CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+
+</head>
+
+<body class="admin-body">
+
+    <nav class="admin-topbar navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/admin/dashboard">
+                <span class="brand-badge"><i class="bi bi-tree-fill"></i></span>
+                <span>FarmLink Admin</span>
+            </a>
+
+            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbar">
+                <ul class="navbar-nav ms-auto align-items-lg-center workspace-nav">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/admin/dashboard' %}active{% endif %}" href="/admin/dashboard">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutConfirmModal">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row g-0">
+            <div class="col-lg-2 col-md-3 admin-sidebar">
+                <div class="sidebar-brand">Control Center</div>
+                <div class="sidebar-panel">
+                    <a href="/admin/dashboard" class="sidebar-link {% if request.path == '/admin/dashboard' %}active{% endif %}">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="/admin/users" class="sidebar-link {% if '/admin/users' in request.path or '/admin/user/' in request.path %}active{% endif %}">
+                        <i class="bi bi-people-fill"></i>
+                        <span>Users</span>
+                    </a>
+                    <a href="{{ url_for('admin.farmer_verifications') }}" class="sidebar-link {% if '/admin/farmer-verification' in request.path %}active{% endif %}">
+                        <i class="bi bi-file-earmark-check"></i>
+                        <span>Farmer Verification</span>
+                    </a>
+                    <a href="/admin/products" class="sidebar-link {% if '/admin/products' in request.path or '/admin/product/' in request.path %}active{% endif %}">
+                        <i class="bi bi-box-seam"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="/admin/categories" class="sidebar-link {% if '/admin/categories' in request.path or '/admin/category/' in request.path %}active{% endif %}">
+                        <i class="bi bi-tags-fill"></i>
+                        <span>Categories</span>
+                    </a>
+                    <a href="/admin/apmc/rates" class="sidebar-link {% if '/admin/apmc' in request.path %}active{% endif %}">
+                        <i class="bi bi-currency-rupee"></i>
+                        <span>APMC Rates</span>
+                    </a>
+                    <a href="/admin/bargaining" class="sidebar-link {% if '/admin/bargaining' in request.path %}active{% endif %}">
+                        <i class="bi bi-graph-up-arrow"></i>
+                        <span>Bargains</span>
+                    </a>
+                    <a href="/admin/settings" class="sidebar-link {% if '/admin/settings' in request.path %}active{% endif %}">
+                        <i class="bi bi-gear-fill"></i>
+                        <span>Settings</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-10 col-md-9 admin-content">
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+
+                    {% if messages %}
+
+                        {% for category, message in messages %}
+
+                            <div class="alert alert-{{ category }} alert-dismissible fade show">
+
+                                {{ message }}
+
+                                <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="alert">
+
+                                </button>
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% endif %}
+
+                {% endwith %}
+
+                {% block content %}
+                {% endblock %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="logoutConfirmLabel">
+                        <i class="bi bi-exclamation-triangle"></i> Logout Confirmation
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">
+                        <strong>Are you sure you want to logout?</strong>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-arrow-left"></i> Go Back
+                    </button>
+                    <a href="{{ url_for('admin.logout') }}" class="btn btn-danger">
+                        <i class="bi bi-box-arrow-right"></i> Yes, Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

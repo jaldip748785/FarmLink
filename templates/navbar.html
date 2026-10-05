@@ -1,0 +1,199 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow sticky-top">
+
+    <div class="container">
+
+        <!-- Logo -->
+        <a class="navbar-brand fw-bold" href="/">
+            <i class="bi bi-leaf-fill"></i>
+            FarmLink
+        </a>
+
+        <!-- Mobile Toggle -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar Items -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+            <!-- Left Menu -->
+            <ul class="navbar-nav me-auto {% if current_user.is_authenticated %}workspace-nav{% endif %} {% if current_user.is_authenticated and current_user.role == 'farmer' %}farmer-nav{% endif %}">
+
+                {% if current_user.is_authenticated and current_user.role == 'farmer' %}
+                <!-- Farmer Navigation -->
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/farmer/dashboard' %}active{% endif %}" href="/farmer/dashboard" {% if request.path == '/farmer/dashboard' %}aria-current="page"{% endif %}>
+                        <i class="bi bi-house-door-fill"></i>
+                        {{ _('home') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/farmer/product/add' %}active{% endif %}" href="/farmer/product/add" {% if request.path == '/farmer/product/add' %}aria-current="page"{% endif %}>
+                        <i class="bi bi-plus-lg"></i>
+                        {{ _('add_product') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/farmer/products' %}active{% endif %}" href="/farmer/products" {% if request.path == '/farmer/products' %}aria-current="page"{% endif %}>
+                        <i class="bi bi-basket-fill"></i>
+                        {{ _('my_products') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/farmer/orders' %}active{% endif %}" href="/farmer/orders" {% if request.path == '/farmer/orders' %}aria-current="page"{% endif %}>
+                        <i class="bi bi-box-seam-fill"></i>
+                        {{ _('my_orders') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/farmer/bargains' %}active{% endif %}" href="/farmer/bargains" {% if request.path == '/farmer/bargains' %}aria-current="page"{% endif %}>
+                        <i class="bi bi-chat-dots-fill"></i>
+                        {{ _('bargaining_requests') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/farmer/apmc/rates' %}active{% endif %}" href="{{ url_for('farmer.apmc_rates') }}" {% if request.path == '/farmer/apmc/rates' %}aria-current="page"{% endif %}>
+                        <i class="bi bi-graph-up-arrow"></i>
+                        {{ _('today_market_rates') }}
+                    </a>
+                </li>
+
+                {% else %}
+                <!-- Buyer Navigation -->
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">
+                        <i class="bi bi-house-door-fill"></i>
+                        {{ _('home') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path.startswith('/buyer/product') or request.path.startswith('/buyer/search') %}active{% endif %}" href="/buyer/products">
+                        <i class="bi bi-basket-fill"></i>
+                        {{ _('products') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path.startswith('/buyer/apmc') %}active{% endif %}" href="{{ url_for('buyer.apmc_rates') }}">
+                        <i class="bi bi-graph-up-arrow"></i>
+                        {{ _('today_market_rates') }}
+                    </a>
+                </li>
+
+                {% if current_user.is_authenticated and current_user.role == 'buyer' %}
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path.startswith('/buyer/orders') %}active{% endif %}" href="/buyer/orders">
+                        <i class="bi bi-box-seam-fill"></i>
+                        {{ _('my_orders') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.path.startswith('/buyer/bargains') %}active{% endif %}" href="/buyer/bargains">
+                        <i class="bi bi-chat-dots-fill"></i>
+                        {{ _('my_bargains') }}
+                    </a>
+                </li>
+                {% endif %}
+                {% endif %}
+
+            </ul>
+
+            <!-- Right Menu -->
+            <ul class="navbar-nav ms-auto">
+
+                <!-- Language Switcher -->
+                <li class="nav-item dropdown me-2">
+                    <a class="nav-link dropdown-toggle" href="#" id="langDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-translate"></i>
+                        <span class="d-none d-md-inline">
+                            {% if current_lang == 'hi' %}हिन्दी{% elif current_lang == 'gu' %}ગુજરાતી{% else %}EN{% endif %}
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="langDropdown">
+                        <li><a class="dropdown-item" href="/switch-language/en"><i class="bi bi-flag-us"></i> English</a></li>
+                        <li><a class="dropdown-item" href="/switch-language/hi"><i class="bi bi-flag-in"></i> हिन्दी (Hindi)</a></li>
+                        <li><a class="dropdown-item" href="/switch-language/gu"><i class="bi bi-flag-in"></i> ગુજરાતી (Gujarati)</a></li>
+                    </ul>
+                </li>
+
+                {% if current_user.is_authenticated %}
+                
+                {% if current_user.role == 'buyer' %}
+                <!-- Cart Icon -->
+                <li class="nav-item me-2">
+                    <a class="nav-link position-relative" href="/buyer/cart" title="Shopping Cart">
+                        <i class="bi bi-cart-fill"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light">
+                            <span id="cart-count">0</span>
+                        </span>
+                    </a>
+                </li>
+                {% endif %}
+                
+                <!-- Notifications Bell -->
+                <li class="nav-item me-2">
+                    <a class="nav-link position-relative" href="/notifications" title="Notifications">
+                        <i class="bi bi-bell-fill"></i>
+                        {% if unread_notifications_count > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light">
+                            {{ unread_notifications_count }}
+                        </span>
+                        {% endif %}
+                    </a>
+                </li>
+
+                <!-- User Menu -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle"></i>
+                        <span class="d-none d-md-inline">{{ current_user.full_name.split(' ')[0] }}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li>
+                            <a class="dropdown-item" href="/auth/profile">
+                                <i class="bi bi-person"></i> {{ _('profile') }}
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/auth/change-password">
+                                <i class="bi bi-key"></i> {{ _('change_password') }}
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#logoutConfirmModal">
+                                <i class="bi bi-box-arrow-right"></i> {{ _('logout') }}
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {% else %}
+                <!-- Login/Register for guests -->
+                <li class="nav-item me-2">
+                    <a href="/auth/login" class="btn btn-light btn-sm">
+                        <i class="bi bi-box-arrow-in-right"></i> {{ _('login') }}
+                    </a>
+                </li>
+                {% endif %}
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</nav>
+
+<script>
+    // Update cart count from localStorage
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('cart') || '{}');
+        const count = Object.keys(cart).length;
+        const cartCount = document.getElementById('cart-count');
+        if (cartCount) {
+            cartCount.textContent = count;
+        }
+    }
+    updateCartCount();
+    window.addEventListener('storage', updateCartCount);
+</script>

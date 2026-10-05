@@ -1,0 +1,160 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Admin Dashboard | FarmLink{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid py-3 py-md-4 px-3 px-md-4" style="max-width: 1240px;">
+
+    <!-- Header Section -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 bg-white p-3 p-md-4 rounded-4 shadow-sm">
+        <div>
+            <div class="d-inline-flex align-items-center gap-2 bg-success-subtle text-success px-3 py-1 rounded-pill mb-2">
+                <i class="bi bi-shield-lock-fill"></i>
+                <span class="small fw-semibold">Control Center</span>
+            </div>
+            <h2 class="fw-bold mb-1 text-dark">
+                <i class="bi bi-speedometer2 text-success me-2"></i>Admin Dashboard
+            </h2>
+            <p class="text-muted mb-0">Manage users, products, and marketplace activity from one central dashboard.</p>
+        </div>
+        <div class="mt-3 mt-md-0">
+            <a href="{{ url_for('admin.products') }}" class="btn btn-success fw-bold px-4 py-2 rounded-3 shadow-sm">
+                <i class="bi bi-plus-circle me-1"></i> Manage Products
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards (Full Width Grid) -->
+    <div class="row g-3 g-xl-4 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 bg-white p-3 stat-card-hover">
+                <div class="card-body d-flex align-items-center justify-content-between p-2">
+                    <div>
+                        <span class="text-muted small fw-semibold d-block mb-1">Total Users</span>
+                        <h2 class="fw-bold mb-0 text-dark">{{ total_users }}</h2>
+                    </div>
+                    <div class="rounded-4 p-3 bg-primary-subtle text-primary">
+                        <i class="bi bi-people-fill fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 bg-white p-3 stat-card-hover">
+                <div class="card-body d-flex align-items-center justify-content-between p-2">
+                    <div>
+                        <span class="text-muted small fw-semibold d-block mb-1">Sellers / Farmers</span>
+                        <h2 class="fw-bold mb-0 text-dark">{{ total_farmers }}</h2>
+                    </div>
+                    <div class="rounded-4 p-3 bg-success-subtle text-success">
+                        <i class="bi bi-person-badge-fill fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 bg-white p-3 stat-card-hover">
+                <div class="card-body d-flex align-items-center justify-content-between p-2">
+                    <div>
+                        <span class="text-muted small fw-semibold d-block mb-1">Buyers</span>
+                        <h2 class="fw-bold mb-0 text-dark">{{ total_buyers }}</h2>
+                    </div>
+                    <div class="rounded-4 p-3 bg-info-subtle text-info">
+                        <i class="bi bi-cart-fill fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 bg-white p-3 stat-card-hover">
+                <div class="card-body d-flex align-items-center justify-content-between p-2">
+                    <div>
+                        <span class="text-muted small fw-semibold d-block mb-1">Active Products</span>
+                        <h2 class="fw-bold mb-0 text-dark">{{ total_products }}</h2>
+                    </div>
+                    <div class="rounded-4 p-3 bg-warning-subtle text-warning">
+                        <i class="bi bi-box-seam-fill fs-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Products Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4">
+        <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-box-seam text-success me-2 fs-5"></i>
+                <h5 class="fw-bold mb-0 text-dark">Recent Products</h5>
+            </div>
+            <a href="{{ url_for('admin.products') }}" class="btn btn-outline-success btn-sm rounded-pill px-3">
+                View All Products <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light small">
+                        <tr>
+                            <th class="ps-4">ID</th>
+                            <th>Product Name</th>
+                            <th>Seller</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th class="pe-4 text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if recent_products %}
+                            {% for product in recent_products %}
+                            <tr>
+                                <td class="ps-4"><span class="fw-bold text-success">#{{ product.id }}</span></td>
+                                <td class="fw-semibold text-dark">{{ product.title }}</td>
+                                <td>{% if product.farmer %}{{ product.farmer.full_name }}{% else %}<span class="text-muted">Unknown</span>{% endif %}</td>
+                                <td class="fw-bold text-success">₹{{ product.price }}</td>
+                                <td>
+                                    {% if product.status == 'Available' %}
+                                        <span class="badge bg-success-subtle text-success border-0 px-3 py-1 rounded-pill">Available</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary-subtle text-secondary border-0 px-3 py-1 rounded-pill">{{ product.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="pe-4 text-end">
+                                    <a href="{{ url_for('admin.edit_product', product_id=product.id) }}" class="btn btn-warning btn-sm rounded-pill px-3">
+                                        <i class="bi bi-pencil-square me-1"></i> Edit
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox text-muted fs-1 d-block mb-2"></i>
+                                    <p class="small mb-0">No products listed yet.</p>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+.stat-card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
+}
+</style>
+
+{% endblock %}

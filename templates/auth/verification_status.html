@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Farmer Verification Status | FarmLink{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow-sm border-0 mx-auto" style="max-width: 700px;">
+        <div class="card-body p-4 p-md-5 text-center">
+            <h2 class="fw-bold mb-3">Registration Status</h2>
+            {% if verification.status == "PENDING" %}
+                <div class="alert alert-warning">Pending Verification</div>
+                <p>Your farmer registration is currently under verification. Please wait for Admin approval.</p>
+                <p class="text-muted">Your land details and uploaded document are under review. Expected verification time: Within 24 hours.</p>
+            {% elif verification.status == "APPROVED" %}
+                <div class="alert alert-success">Verification Approved</div>
+                <p>Your farmer account has been verified by FarmLink Admin.</p>
+                <p>You can now login and use FarmLink.</p>
+                <a class="btn btn-success" href="{{ url_for('auth.login') }}">Login</a>
+            {% else %}
+                <div class="alert alert-danger">Verification Rejected</div>
+                <p>Your farmer registration request was not approved.</p>
+                <p><strong>Reason:</strong> {{ verification.rejection_reason }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile | FarmLink{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-header bg-success text-white py-3">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="bi bi-pencil-square"></i>
+                        {{ _('edit_seller_profile') }}
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="/farmer/profile/edit" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">{{ _('full_name') }}</label>
+                            <input type="text" class="form-control" name="full_name" value="{{ farmer.full_name }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">{{ _('mobile') }}</label>
+                            <input type="tel" class="form-control" name="phone" value="{{ farmer.phone }}" required>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-semibold">{{ _('district') }}</label>
+                                <select class="form-select" name="district_id" id="districtSelect" required>
+                                    <option value="">{{ _('select_district') }}</option>
+                                    {% for district in districts %}
+                                        <option value="{{ district.id }}" {% if farmer.district_id == district.id %}selected{% endif %}>{{ district.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-semibold">{{ _('taluka') }}</label>
+                                <select class="form-select" name="taluka_id" id="talukaSelect">
+                                    <option value="">{{ _('select_taluka') }}</option>
+                                    {% for taluka in talukas %}
+                                        <option value="{{ taluka.id }}" {% if farmer.taluka_id == taluka.id %}selected{% endif %}>{{ taluka.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-semibold">{{ _('village') }}</label>
+                                <select class="form-select" name="village_id" id="villageSelect">
+                                    <option value="">{{ _('select_village') }}</option>
+                                    {% for village in villages %}
+                                        <option value="{{ village.id }}" {% if farmer.village_id == village.id %}selected{% endif %}>{{ village.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">{{ _('address_location_details') }}</label>
+                            <textarea class="form-control" name="address" rows="3" placeholder="{{ _('enter_detailed_address') }}" required>{{ farmer.address if farmer.address else '' }}</textarea>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success btn-lg px-4">
+                                <i class="bi bi-save-fill"></i> {{ _('save_changes') }}
+                            </button>
+                            <a href="/farmer/profile" class="btn btn-secondary btn-lg px-4 ms-2">{{ _('cancel') }}</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.getElementById('districtSelect').addEventListener('change', function() {
+    const districtId = this.value;
+    const talukaSelect = document.getElementById('talukaSelect');
+    const villageSelect = document.getElementById('villageSelect');
+    
+    talukaSelect.innerHTML = '<option value="">Select Taluka</option>';
+    villageSelect.innerHTML = '<option value="">Select Village</option>';
+    
+    if (!districtId) return;
+    
+    fetch(`/api/talukas/${districtId}`)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(taluka => {
+                const option = document.createElement('option');
+                option.value = taluka.id;
+                option.textContent = taluka.name;
+                talukaSelect.appendChild(option);
+            });
+        })
+        .catch(err => console.error('Error fetching talukas:', err));
+});
+
+document.getElementById('talukaSelect').addEventListener('change', function() {
+    const talukaId = this.value;
+    const villageSelect = document.getElementById('villageSelect');
+    
+    villageSelect.innerHTML = '<option value="">Select Village</option>';
+    
+    if (!talukaId) return;
+    
+    fetch(`/api/villages/${talukaId}`)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(village => {
+                const option = document.createElement('option');
+                option.value = village.id;
+                option.textContent = village.name;
+                villageSelect.appendChild(option);
+            });
+        })
+        .catch(err => console.error('Error fetching villages:', err));
+});
+</script>
+{% endblock %}
+{% endblock %}

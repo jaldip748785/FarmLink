@@ -1,0 +1,179 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Bargaining Analytics | FarmLink Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-success mb-0">
+            <i class="bi bi-graph-up-arrow me-2"></i>Bargaining Analytics
+        </h2>
+    </div>
+
+    <!-- Analytics Dashboard Counts Grid -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4 col-lg-2">
+            <div class="card shadow-sm border-0 rounded-4 text-center h-100 p-3 bg-white">
+                <div class="text-muted small mb-1">Total Bargains</div>
+                <h3 class="fw-bold text-dark mb-0">{{ total_negotiations }}</h3>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-2">
+            <div class="card shadow-sm border-0 rounded-4 text-center h-100 p-3 bg-white">
+                <div class="text-muted small mb-1">Active Bargains</div>
+                <h3 class="fw-bold text-primary mb-0">{{ active_negotiations }}</h3>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-2">
+            <div class="card shadow-sm border-0 rounded-4 text-center h-100 p-3 bg-white">
+                <div class="text-muted small mb-1">Successful Deals</div>
+                <h3 class="fw-bold text-success mb-0">{{ successful_negotiations }}</h3>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-2">
+            <div class="card shadow-sm border-0 rounded-4 text-center h-100 p-3 bg-white">
+                <div class="text-muted small mb-1">Rejected Offers</div>
+                <h3 class="fw-bold text-danger mb-0">{{ rejected_negotiations }}</h3>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-2">
+            <div class="card shadow-sm border-0 rounded-4 text-center h-100 p-3 bg-white">
+                <div class="text-muted small mb-1">Expired Sessions</div>
+                <h3 class="fw-bold text-secondary mb-0">{{ expired_negotiations }}</h3>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-2">
+            <div class="card shadow-sm border-0 rounded-4 text-center h-100 p-3 bg-white">
+                <div class="text-muted small mb-1">Success Rate</div>
+                <h3 class="fw-bold text-success mb-0">
+                    {% if total_negotiations > 0 %}
+                    {{ ((successful_negotiations / total_negotiations) * 100)|int }}%
+                    {% else %}
+                    0%
+                    {% endif %}
+                </h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Financial Analytics & Discount Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card shadow border-0 rounded-4 p-4 h-100 bg-success bg-opacity-10">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="p-3 rounded bg-success text-white me-3">
+                        <i class="bi bi-tag-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1 small fw-semibold">Average Unit Price (Deals)</h6>
+                        <h2 class="fw-bold text-success mb-0">₹{{ '%.2f'|format(avg_negotiated_price) }}</h2>
+                    </div>
+                </div>
+                <p class="text-muted small mb-0">Calculated as the average agreed price per unit across all accepted and completed negotiations.</p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow border-0 rounded-4 p-4 h-100 bg-warning bg-opacity-10">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="p-3 rounded bg-warning text-dark me-3">
+                        <i class="bi bi-percent fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1 small fw-semibold">Average Discount Saved</h6>
+                        <h2 class="fw-bold text-warning-emphasis mb-0">₹{{ '%.2f'|format(avg_discount) }}</h2>
+                    </div>
+                </div>
+                <p class="text-muted small mb-0">Calculated as the average difference between the listed price and the final agreed price per unit.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Leaders Lists -->
+    <div class="row g-4">
+        <!-- Most Negotiated Products -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+                <div class="card-header bg-white border-light py-3">
+                    <h5 class="fw-bold mb-0 text-success"><i class="bi bi-bag-check-fill me-2"></i>Most Negotiated Products</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if top_products %}
+                    <ul class="list-group list-group-flush">
+                        {% for item in top_products %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center p-3 border-light bg-transparent">
+                            <div>
+                                <h6 class="fw-bold mb-1">{{ item.product.title }}</h6>
+                                <small class="text-muted">Seller: {{ item.product.farmer.full_name }}</small>
+                            </div>
+                            <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2 fw-bold">
+                                {{ item.count }} negotiations
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="text-center py-5 text-muted">No records found</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Most Active Farmers -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+                <div class="card-header bg-white border-light py-3">
+                    <h5 class="fw-bold mb-0 text-success"><i class="bi bi-person-badge-fill me-2"></i>Most Active Farmers</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if top_farmers %}
+                    <ul class="list-group list-group-flush">
+                        {% for item in top_farmers %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center p-3 border-light bg-transparent">
+                            <div>
+                                <h6 class="fw-bold mb-1">{{ item.farmer.full_name }}</h6>
+                                <small class="text-muted">Mobile: {{ item.farmer.phone }}</small>
+                            </div>
+                            <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2 fw-bold">
+                                {{ item.count }} bargains
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="text-center py-5 text-muted">No records found</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Most Active Buyers -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+                <div class="card-header bg-white border-light py-3">
+                    <h5 class="fw-bold mb-0 text-success"><i class="bi bi-people-fill me-2"></i>Most Active Buyers</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if top_buyers %}
+                    <ul class="list-group list-group-flush">
+                        {% for item in top_buyers %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center p-3 border-light bg-transparent">
+                            <div>
+                                <h6 class="fw-bold mb-1">{{ item.buyer.full_name }}</h6>
+                                <small class="text-muted">Mobile: {{ item.buyer.phone }}</small>
+                            </div>
+                            <span class="badge bg-info-subtle text-info-emphasis rounded-pill px-3 py-2 fw-bold">
+                                {{ item.count }} negotiations
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="text-center py-5 text-muted">No records found</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

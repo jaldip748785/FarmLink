@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('received_orders') }} - {{ _('farmlink') }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0"><i class="bi bi-box-seam text-success me-2"></i>{{ _('received_orders') }}</h2>
+    </div>
+
+    {% if orders %}
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="ps-4">{{ _('order_id') }}</th>
+                            <th scope="col">{{ _('product') }}</th>
+                            <th scope="col">{{ _('buyer') }}</th>
+                            <th scope="col">{{ _('date') }}</th>
+                            <th scope="col">{{ _('total') }}</th>
+                            <th scope="col">{{ _('status') }}</th>
+                            <th scope="col" class="text-end pe-4">{{ _('action') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td class="ps-4 fw-semibold text-muted">#ORD-{{ order.id }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <h6 class="mb-0 fw-semibold">{{ order.product.title }}</h6>
+                                </div>
+                                <small class="text-muted">{{ _('quantity') }}: {{ order.quantity }} {{ order.product.unit }}</small>
+                            </td>
+                            <td>
+                                <div>{{ order.buyer.full_name }}</div>
+                                <small class="text-muted"><i class="bi bi-telephone"></i> {{ order.buyer.phone }}</small>
+                            </td>
+                            <td>{{ order.created_at.strftime('%d %b %Y') }}</td>
+                            <td class="fw-bold text-success">₹{{ order.total_amount }}</td>
+                            <td>
+                                {% set status = order.status %}
+                                {% if status in ['Pending Payment', 'Pending'] %}
+                                <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i> {{ _('Pending') }}</span>
+                                {% elif status == 'Confirmed' %}
+                                <span class="badge bg-info text-dark"><i class="bi bi-check2-circle me-1"></i> {{ _('Confirmed') }}</span>
+                                {% elif status == 'Processing' %}
+                                <span class="badge bg-primary"><i class="bi bi-gear me-1"></i> {{ _('Processing') }}</span>
+                                {% elif status == 'Shipped' %}
+                                <span class="badge bg-secondary"><i class="bi bi-truck me-1"></i> {{ _('Shipped') }}</span>
+                                {% elif status == 'Out for Delivery' %}
+                                <span class="badge bg-warning text-dark"><i class="bi bi-bicycle me-1"></i> {{ _('Out for Delivery') }}</span>
+                                {% elif status == 'Delivered' %}
+                                <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i> {{ _('Delivered') }}</span>
+                                {% elif status == 'Cancelled' %}
+                                <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i> {{ _('Cancelled') }}</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ _(status) }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-4">
+                                <form action="{{ url_for('farmer.update_order_status', order_id=order.id) }}" method="POST" class="d-flex align-items-center gap-2">
+                                    <select class="form-select form-select-sm" name="status" aria-label="Order status">
+                                        {% for option in ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled'] %}
+                                        <option value="{{ option }}" {% if order.status == option or order.status == 'Pending Payment' and option == 'Pending' %}selected{% endif %}>{{ _(option) }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-success" title="{{ _('update_status') }}">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </button>
+                                </form>
+                                <a href="tel:{{ order.buyer.phone }}" class="btn btn-sm btn-success mt-2" title="{{ _('call_buyer') }}"><i class="bi bi-telephone"></i></a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-receipt text-muted" style="font-size: 4rem;"></i>
+        <h4 class="mt-3 fw-bold">{{ _('no_orders_received_yet') }}</h4>
+        <p class="text-muted mb-4">{{ _('no_orders_received_desc') }}</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

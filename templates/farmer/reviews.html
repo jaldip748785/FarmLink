@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Reviews | FarmLink{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">
+                <i class="bi bi-star-fill text-warning"></i>
+                {{ _('customer_reviews') }}
+            </h2>
+            <p class="text-muted mb-0">
+                {{ _('reviews_received') }}
+            </p>
+        </div>
+        <a href="/farmer/dashboard" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i>
+            {{ _('back_to_dashboard') }}
+        </a>
+    </div>
+
+    <div class="card shadow border-0">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+                {{ _('reviews_list') }}
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>{{ _('product') }}</th>
+                            <th>{{ _('reviewer') }}</th>
+                            <th>{{ _('rating') }}</th>
+                            <th>{{ _('comment') }}</th>
+                            <th>{{ _('date') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for review in reviews %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ review.product.title }}</td>
+                            <td>{{ review.author.full_name }}</td>
+                            <td>
+                                {% for i in range(review.rating) %}
+                                <i class="bi bi-star-fill text-warning"></i>
+                                {% endfor %}
+                            </td>
+                            <td>{{ review.comment }}</td>
+                            <td>{{ review.created_at.strftime('%Y-%m-%d') }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">{{ _('no_reviews_found') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

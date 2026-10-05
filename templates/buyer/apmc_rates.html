@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('today_market_rates') }} | FarmLink{% endblock %}
+
+{% block content %}
+<div class="container py-4 py-lg-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 gap-3 flex-wrap">
+        <div>
+            <h2 class="fw-bold mb-1">{{ _('today_market_rates') }}</h2>
+            <p class="text-muted mb-0">{{ _('buyer_market_rates_desc') }}</p>
+        </div>
+        <a href="{{ url_for('buyer.products') }}" class="btn btn-outline-success">
+            <i class="bi bi-basket-fill me-1"></i>{{ _('browse_products') }}
+        </a>
+    </div>
+
+    <form method="get" action="{{ url_for('buyer.apmc_rates') }}" class="row g-2 align-items-end mb-4">
+        <div class="col-sm-5 col-md-4">
+            <label for="rate-period" class="form-label">{{ _('rate_period') }}</label>
+            <select id="rate-period" name="period" class="form-select" onchange="toggleRateDate(this.value)">
+                <option value="today" {% if period == 'today' %}selected{% endif %}>{{ _('today') }}</option>
+                <option value="yesterday" {% if period == 'yesterday' %}selected{% endif %}>{{ _('yesterday') }}</option>
+                <option value="date" {% if period == 'date' %}selected{% endif %}>{{ _('specific_date') }}</option>
+            </select>
+        </div>
+        <div class="col-sm-5 col-md-4" id="specific-date-group" {% if period != 'date' %}style="display:none;"{% endif %}>
+            <label for="rate-date" class="form-label">{{ _('select_date') }}</label>
+            <input id="rate-date" type="date" name="date" class="form-control" value="{{ selected_date.isoformat() }}">
+        </div>
+        <div class="col-sm-2 col-md-2">
+            <button type="submit" class="btn btn-success w-100">{{ _('show_rates') }}</button>
+        </div>
+    </form>
+
+    {% if category_groups %}
+    {% for category_name, category_rates in category_groups.items() %}
+    <section class="mb-4">
+        <h4 class="fw-bold mb-3"><i class="bi bi-tags-fill text-success me-2"></i>{{ category_name }}</h4>
+        <div class="card border-0 shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>{{ _('commodity') }}</th>
+                        <th>{{ _('market') }}</th>
+                        <th>{{ _('district') }}</th>
+                        <th>{{ _('modal_price') }}</th>
+                        <th>{{ _('min_price') }}</th>
+                        <th>{{ _('max_price') }}</th>
+                        <th>{{ _('rate_date') }}</th>
+                    </tr>
+                </thead>
+                    <tbody>
+                    {% for rate in category_rates %}
+                    <tr>
+                        <td class="fw-semibold">{{ rate.commodity_name }}</td>
+                        <td>{{ rate.market_name }}</td>
+                        <td>{{ rate.district.name if rate.district else '-' }}</td>
+                        <td class="text-success fw-semibold">₹{{ rate.modal_price }} / {{ rate.unit }}</td>
+                        <td>₹{{ rate.minimum_price }}</td>
+                        <td>₹{{ rate.maximum_price }}</td>
+                        <td>
+                            {{ rate.rate_date.strftime('%d %b %Y') }}
+                            {% if rate.rate_date == today %}
+                            <span class="badge bg-success ms-1">{{ _('today') }}</span>
+                            {% elif rate.rate_date == yesterday %}
+                            <span class="badge bg-secondary ms-1">{{ _('yesterday') }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    {% endfor %}
+    {% else %}
+    <div class="alert alert-info text-center py-4">
+        <i class="bi bi-bar-chart-line display-6 d-block mb-2"></i>
+        {{ _('no_rates_found') }}
+    </div>
+    {% endif %}
+</div>
+<script>
+function toggleRateDate(period) {
+    document.getElementById('specific-date-group').style.display = period === 'date' ? '' : 'none';
+}
+</script>
+{% endblock %}

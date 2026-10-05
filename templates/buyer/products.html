@@ -1,0 +1,393 @@
+{% extends "base.html" %}
+
+{% block title %}Fresh Farm Products | FarmLink{% endblock %}
+
+{% block content %}
+
+<div class="container py-5 product-marketplace-page">
+    <div class="product-page-shell section-shell mb-4">
+        <div class="row align-items-center g-4 px-3 px-lg-4 py-4 py-lg-5">
+            <div class="col-lg-8">
+                <div class="eyebrow-pill">
+                    <i class="bi bi-leaf-fill"></i>
+                    FarmLink Marketplace
+                </div>
+                <h1 class="page-title mb-3">
+                    <i class="bi bi-basket-fill me-2"></i>
+                    Fresh Farm Products
+                </h1>
+                <p class="page-subtitle mb-0">
+                    Direct from local farmers — fresh produce, fair pricing, and trusted sourcing.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="/buyer/filter" class="btn btn-outline-success btn-lg product-filter-btn">
+                    <i class="bi bi-funnel"></i>
+                    Filter & Search
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="product-pill-row mb-4">
+        <span class="product-pill"><i class="bi bi-stars"></i> Fresh picks</span>
+        <span class="product-pill"><i class="bi bi-truck"></i> Local delivery</span>
+        <span class="product-pill"><i class="bi bi-shield-check"></i> Verified sellers</span>
+        <span class="product-pill"><i class="bi bi-geo-alt-fill"></i> Nearby farms</span>
+    </div>
+
+    <div class="row g-4">
+        {% if products %}
+            {% for product in products %}
+            <div class="col-xl-3 col-lg-4 col-md-6">
+                <article class="card h-100 product-market-card">
+                    <div class="product-image-wrap">
+                        <img src="{{ url_for('static', filename='uploads/' + product.image if product.image else 'uploads/products/default.jpg') }}"
+                             class="w-100 h-100"
+                             alt="{{ product.title }}"
+                             style="object-fit: cover;">
+
+                        <span class="product-badge">
+                            <i class="bi bi-tag-fill me-1"></i>
+                            {{ _(product.category.name) if product.category else _('fresh_quality') }}
+                        </span>
+
+                        <div class="product-hover-bar">
+                            <small>View product details</small>
+                        </div>
+                    </div>
+
+                    <div class="card-body d-flex flex-column">
+                        <div class="product-meta-top">
+                            <p class="product-category-label mb-2">
+                                {{ _(product.category.name) if product.category else _('fresh_quality') }}
+                            </p>
+                            <h5 class="card-title mb-2">
+                                {{ product.title }}
+                            </h5>
+                        </div>
+
+                        <p class="card-text product-description">
+                            {{ product.description[:60] }}{% if product.description and product.description|length > 60 %}...{% endif %}
+                        </p>
+
+                        <div class="product-price-row">
+                            <div class="product-price">₹{{ product.price }}</div>
+                            <span class="product-unit">/ {{ product.unit }}</span>
+                        </div>
+
+                        <div class="info-group">
+                            <div class="meta-row">
+                                <i class="bi bi-person-fill"></i>
+                                <span>{{ product.farmer.full_name if product.farmer else 'Farmer' }}</span>
+                            </div>
+                            <div class="meta-row">
+                                <i class="bi bi-geo-alt-fill"></i>
+                                <span>
+                                    {% if product.village %}{{ product.village.name }}{% endif %}
+                                    {% if product.taluka %}{{ product.taluka.name }}{% endif %}
+                                    {% if product.district %}{{ product.district.name }}{% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="quantity-row">
+                            <i class="bi bi-box-seam"></i>
+                            <span>Available: <strong>{{ product.quantity }} {{ product.unit }}</strong></span>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-auto pt-3">
+                            <a href="/buyer/product/{{ product.id }}" class="btn btn-success w-100 fw-bold">
+                                <i class="bi bi-eye-fill"></i>
+                                View Details
+                            </a>
+                            <a href="/buyer/cart" class="btn btn-outline-success btn-sm w-100">
+                                <i class="bi bi-cart-plus"></i>
+                                Add to Cart
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="card border-0 shadow-lg p-5 text-center product-empty-state">
+                    <div class="empty-illustration">
+                        <i class="bi bi-basket3-fill"></i>
+                    </div>
+                    <h3 class="fw-bold mb-2">No products available yet</h3>
+                    <p class="text-muted fs-5 mb-4">
+                        Fresh produce from local farmers will appear here as soon as it is listed.
+                    </p>
+                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                        <a href="/" class="btn btn-success btn-lg">
+                            <i class="bi bi-house-door"></i>
+                            Go to Home
+                        </a>
+                        <a href="/buyer/filter" class="btn btn-outline-success btn-lg">
+                            <i class="bi bi-funnel"></i>
+                            Try Filters
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.product-marketplace-page {
+    padding-top: 2rem;
+}
+
+.product-page-shell {
+    border-radius: 28px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(240,253,244,0.9));
+    border: 1px solid rgba(34, 197, 94, 0.12);
+    box-shadow: var(--shadow);
+}
+
+.eyebrow-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(34, 197, 94, 0.12);
+    color: var(--primary-dark);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    border-radius: 999px;
+    padding: 0.5rem 0.9rem;
+    font-weight: 700;
+    font-size: 0.76rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.page-title {
+    font-size: clamp(2.1rem, 3vw, 3.1rem);
+    font-weight: 800;
+    letter-spacing: -0.06em;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.page-subtitle {
+    color: var(--text-muted);
+    font-size: 1.08rem;
+    max-width: 650px;
+}
+
+.product-filter-btn {
+    min-width: 190px;
+}
+
+.product-pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.product-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1rem;
+    background: rgba(255,255,255,0.75);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    border-radius: 999px;
+    color: var(--text-dark);
+    font-size: 0.8rem;
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+}
+
+.product-pill i {
+    color: var(--primary);
+}
+
+.product-market-card {
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    background: rgba(255,255,255,0.92);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.product-market-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+}
+
+.product-image-wrap {
+    position: relative;
+    height: 260px;
+    overflow: hidden;
+    background: #edf7ef;
+}
+
+.product-image-wrap img {
+    object-fit: cover;
+    transition: transform 0.35s ease;
+}
+
+.product-market-card:hover .product-image-wrap img {
+    transform: scale(1.08);
+}
+
+.product-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    display: inline-flex;
+    align-items: center;
+    background: rgba(22, 101, 52, 0.92);
+    color: #fff;
+    padding: 0.45rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.product-hover-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem;
+    background: linear-gradient(180deg, rgba(15,23,42,0), rgba(15,23,42,0.72));
+    color: #fff;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.product-market-card:hover .product-hover-bar {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.product-market-card .card-body {
+    padding: 1.1rem 1.1rem 1.15rem;
+}
+
+.product-category-label {
+    color: var(--primary-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+}
+
+.product-market-card .card-title {
+    font-size: 1.15rem;
+    line-height: 1.4;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.product-description {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    min-height: 48px;
+}
+
+.product-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    margin: 0.8rem 0 0.75rem;
+}
+
+.product-price {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--primary-dark);
+    letter-spacing: -0.05em;
+}
+
+.product-unit {
+    color: var(--text-soft);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.info-group {
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    padding: 0.75rem 0;
+    margin-bottom: 0.9rem;
+}
+
+.meta-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.4;
+}
+
+.meta-row + .meta-row {
+    margin-top: 0.5rem;
+}
+
+.meta-row i {
+    color: var(--primary);
+    margin-top: 0.1rem;
+}
+
+.quantity-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-dark);
+    font-size: 0.82rem;
+    margin-bottom: 0.8rem;
+}
+
+.quantity-row i {
+    color: var(--primary);
+}
+
+.product-empty-state {
+    border-radius: 26px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(240,253,244,0.9));
+}
+
+.empty-illustration {
+    width: 110px;
+    height: 110px;
+    border-radius: 28px;
+    background: linear-gradient(135deg, rgba(34,197,94,0.12), rgba(22,163,74,0.18));
+    color: var(--primary-dark);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 3rem;
+}
+
+@media (max-width: 767.98px) {
+    .page-title {
+        font-size: 2.2rem;
+    }
+
+    .product-market-card .card-body {
+        padding: 1rem;
+    }
+
+    .product-price {
+        font-size: 1.5rem;
+    }
+}
+</style>
+
+{% endblock %}

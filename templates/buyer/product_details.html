@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% block title %}Product Details | FarmLink{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row">
+
+        <!-- Product Image -->
+        <div class="col-lg-5 mb-4">
+
+            <div class="card shadow border-0">
+
+                <img src="{{ url_for('static', filename='uploads/' + product.image if product.image else 'uploads/products/default.jpg') }}"
+                     class="card-img-top"
+                     alt="Product Image">
+
+            </div>
+
+        </div>
+
+        <!-- Product Information -->
+        <div class="col-lg-7">
+
+            <h2 class="fw-bold">{{ product.title }}</h2>
+
+            <span class="badge bg-success fs-6 mb-3">
+                {{ product.category.name if product.category else 'N/A' }}
+            </span>
+
+            <h3 class="text-success fw-bold mb-3">
+                <span class="fs-6 text-muted fw-normal d-block mb-1">Seller Listed Price</span>
+                ₹{{ product.price }} / {{ product.unit }}
+            </h3>
+            
+
+
+            <table class="table table-bordered">
+
+                <tr>
+                    <th width="35%">{{ _('available_quantity') }}</th>
+                    <td>{{ product.quantity }} {{ product.unit }}</td>
+                </tr>
+
+                <tr>
+                    <th>{{ _('harvest_location') }}</th>
+                    <td>{{ product.village.name if product.village else 'N/A' }}, {{ product.taluka.name if product.taluka else 'N/A' }}, {{ product.district.name if product.district else 'N/A' }}</td>
+                </tr>
+
+                <tr>
+                    <th>{{ _('status') }}</th>
+                    <td>
+                        <span class="badge {% if product.status == 'Available' %}bg-success{% else %}bg-secondary{% endif %}">
+                            {{ _('available') if product.status == 'Available' else product.status }}
+                        </span>
+                    </td>
+                </tr>
+
+            </table>
+
+            <div class="mt-4">
+
+                <h5>{{ _('description') }}</h5>
+
+                <p class="text-muted">
+                    {{ product.description if product.description else _('no_description_provided') }}
+                </p>
+
+            </div>
+
+            <div class="mt-4">
+                <h5>Customer Reviews</h5>
+                {% if product.reviews %}
+                    {% for review in product.reviews %}
+                    <div class="border rounded p-3 mb-3">
+                        <div class="fw-semibold">{{ review.author.full_name if review.author else 'Buyer' }}</div>
+                        <div class="text-warning">{'★' * review.rating} {'☆' * (5 - review.rating)}</div>
+                        <p class="mb-0 mt-2">{{ review.comment }}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No reviews yet. Purchase this product to be the first to review it.</p>
+                {% endif %}
+            </div>
+
+            {% if current_user.is_authenticated and current_user.role == 'buyer' and product.farmer_id != current_user.id %}
+            <div class="mt-4 card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Leave a review</h5>
+                    <form id="review-form" data-product-id="{{ product.id }}">
+                        <div class="mb-3">
+                            <label class="form-label">Rating</label>
+                            <select class="form-select" id="review-rating" required>
+                                <option value="5">5 - Excellent</option>
+                                <option value="4">4 - Very Good</option>
+                                <option value="3">3 - Good</option>
+                                <option value="2">2 - Fair</option>
+                                <option value="1">1 - Poor</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Comment</label>
+                            <textarea class="form-control" id="review-comment" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success">Submit Review</button>
+                    </form>
+                    <div id="review-feedback" class="mt-3"></div>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- Seller Information -->
+
+    <div class="card shadow mt-5">
+
+        <div class="card-header bg-success text-white">
+
+            <h4 class="mb-0">
+                {{ _('seller_information') }}
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <table class="table">
+
+                        <tr>
+                            <th>{{ _('seller_name') }}</th>
+                            <td>{{ product.farmer.full_name if product.farmer else 'N/A' }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>{{ _('mobile') }}</th>
+                            <td>{{ product.farmer.phone if product.farmer else 'N/A' }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>{{ _('email') }}</th>
+                            <td>{{ product.farmer.email if product.farmer else 'N/A' }}</td>
+                        </tr>
+
+                    </table>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <table class="table">
+
+                        <tr>
+                            <th>{{ _('district') }}</th>
+                            <td>{{ product.district.name if product.district else 'N/A' }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>{{ _('taluka') }}</th>
+                            <td>{{ product.taluka.name if product.taluka else 'N/A' }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>{{ _('village') }}</th>
+                            <td>{{ product.village.name if product.village else 'N/A' }}</td>
+                        </tr>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+            <div class="text-center mt-4 d-flex justify-content-center flex-wrap gap-2">
+
+                <a href="tel:{{ product.farmer.phone if product.farmer else '' }}"
+                   class="btn btn-success btn-lg">
+
+                    <i class="bi bi-telephone-fill"></i>
+                    {{ _('call_seller') }}
+
+                </a>
+
+                <a href="https://wa.me/{{ product.farmer.phone if product.farmer else '' }}"
+                   class="btn btn-outline-success btn-lg">
+
+                    <i class="bi bi-whatsapp"></i>
+                    {{ _('whatsapp') }}
+
+                </a>
+
+                {% if current_user.is_authenticated and current_user.role == 'buyer' and product.farmer_id != current_user.id and product.allow_bargaining and product.status == 'Available' %}
+                <button type="button"
+                        class="btn btn-warning btn-lg fw-semibold"
+                        data-bs-toggle="modal"
+                        data-bs-target="#bargainModal">
+                    <i class="bi bi-chat-left-text-fill"></i>
+                    {{ _('bargain_price') }}
+                </button>
+                {% endif %}
+
+                {% if current_user.is_authenticated and current_user.role == 'buyer' and product.farmer_id != current_user.id and product.status == 'Available' %}
+                <form action="/buyer/cart/add/{{ product.id }}" method="POST" class="d-inline-flex gap-2 align-items-center">
+                    <input type="number" name="quantity" class="form-control" style="width: 80px;" value="1" min="1" max="{{ product.quantity }}" required>
+                    <button type="submit" class="btn btn-primary btn-lg fw-semibold">
+                        <i class="bi bi-cart-plus-fill"></i> Add to Cart
+                    </button>
+                </form>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Bargaining Modal -->
+{% if current_user.is_authenticated and current_user.role == 'buyer' and product.farmer_id != current_user.id and product.allow_bargaining and product.status == 'Available' %}
+<div class="modal fade" id="bargainModal" tabindex="-1" aria-labelledby="bargainModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold" id="bargainModalLabel">
+                    <i class="bi bi-chat-left-quote-fill me-2"></i>{{ _('make_offer') }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/buyer/bargain/start/{{ product.id }}" method="POST">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label text-muted mb-1">{{ _('listed_price') }}</label>
+                        <div class="form-control-plaintext fs-5 fw-semibold text-success p-0">
+                            ₹{{ product.price }} / {{ product.unit }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="quantity" class="form-label fw-semibold">{{ _('quantity') }} ({{ product.unit }})</label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="bargainQty" 
+                                   name="quantity" 
+                                   min="1" 
+                                   max="{{ product.quantity }}" 
+                                   value="1" 
+                                   required 
+                                   oninput="calculateTotal()">
+                            <div class="form-text">Max: {{ product.quantity }} {{ product.unit }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="offer_price" class="form-label fw-semibold">{{ _('your_offer') }} (₹/{{ product.unit }})</label>
+                            <input type="number" 
+                                   class="form-control text-success fw-bold" 
+                                   id="bargainPrice" 
+                                   name="offer_price" 
+                                   min="1" 
+                                   step="any" 
+                                   placeholder="Price per {{ product.unit }}" 
+                                   required 
+                                   oninput="calculateTotal()">
+                        </div>
+                    </div>
+
+                    <div class="mb-3 p-3 bg-light rounded-3 d-flex justify-content-between align-items-center">
+                        <span class="text-muted fw-semibold">{{ _('total') }}:</span>
+                        <span class="fs-4 fw-bold text-success" id="bargainTotal">₹0.00</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="message" class="form-label fw-semibold">{{ _('message') }} ({{ _('cancel') }} / Optional)</label>
+                        <textarea class="form-control" 
+                                  id="message" 
+                                  name="message" 
+                                  rows="3" 
+                                  placeholder="E.g., I would like to buy {{ product.title }}. Can you do this price?"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light p-3">
+                    <button type="button" class="btn btn-secondary border-0" data-bs-dismiss="modal">{{ _('cancel') }}</button>
+                    <button type="submit" class="btn btn-success fw-semibold px-4">{{ _('send_offer') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function calculateTotal() {
+    const qty = parseFloat(document.getElementById('bargainQty').value) || 0;
+    const price = parseFloat(document.getElementById('bargainPrice').value) || 0;
+    const total = qty * price;
+    document.getElementById('bargainTotal').innerText = '₹' + total.toFixed(2);
+}
+</script>
+{% endif %}
+
+
+        </div>
+
+    </div>
+
+</div>
+
+{% include 'buyer/review_form_script.html' %}
+
+{% endblock %}

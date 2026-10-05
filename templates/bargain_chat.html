@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+
+{% block title %}Negotiation | FarmLink{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Sidebar: Deal Summary & Timeline -->
+        <div class="col-lg-4 mb-4">
+            <!-- Product Card Summary -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-success text-white py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-info-circle-fill me-2"></i>Deal Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        {% if session.product.image %}
+                        <img src="{{ url_for('static', filename='uploads/' + session.product.image) }}" 
+                             class="rounded-3 img-fluid mb-2" style="max-height: 150px; object-fit: cover;">
+                        {% endif %}
+                        <h5 class="fw-bold mb-1">{{ session.product.title }}</h5>
+                        <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill mb-2">
+                            {{ session.product.category.name }}
+                        </span>
+                    </div>
+
+                    <ul class="list-group list-group-flush small">
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-0 bg-transparent border-light">
+                            <span class="text-muted">Listed Price:</span>
+                            <span class="fw-bold">₹{{ session.listed_price }} / {{ session.product.unit }}</span>
+                        </li>
+                        {% if session.product.apmc_rate %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-0 bg-transparent border-light">
+                            <span class="text-muted"><i class="bi bi-graph-up-arrow text-success"></i> APMC Market:</span>
+                            <span class="fw-bold text-success">₹{{ session.product.apmc_reference_price }} / {{ session.product.unit }}</span>
+                        </li>
+                        {% endif %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-0 bg-transparent border-light">
+                            <span class="text-muted">Quantity Selected:</span>
+                            <span class="fw-bold">{{ session.quantity }} {{ session.product.unit }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-0 bg-transparent border-light">
+                            <span class="text-muted">Total (at listed price):</span>
+                            <span class="fw-bold">₹{{ session.listed_price * session.quantity }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-0 bg-transparent border-light">
+                            <span class="text-muted">Session Status:</span>
+                            <span>
+                                {% if session.status == 'PENDING' %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                                {% elif session.status == 'NEGOTIATING' %}
+                                <span class="badge bg-primary">Negotiating</span>
+                                {% elif session.status == 'ACCEPTED' %}
+                                <span class="badge bg-success">Accepted Deal</span>
+                                {% elif session.status == 'REJECTED' %}
+                                <span class="badge bg-danger">Rejected</span>
+                                {% elif session.status == 'EXPIRED' %}
+                                <span class="badge bg-secondary">Expired</span>
+                                {% elif session.status == 'CANCELLED' %}
+                                <span class="badge bg-secondary">Cancelled</span>
+                                {% elif session.status == 'COMPLETED' %}
+                                <span class="badge bg-success-subtle text-success">Completed</span>
+                                {% endif %}
+                            </span>
+                        </li>
+                    </ul>
+
+                    {% if session.status == 'ACCEPTED' and current_user.role == 'buyer' %}
+                    <div class="mt-4">
+                        <a href="{{ url_for('order.checkout', order_id=session.order.id) }}" class="btn btn-warning w-100 fw-bold rounded-pill py-2 shadow-sm">
+                            <i class="bi bi-cart-check-fill me-2"></i>{{ _('proceed_to_order') }}
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Negotiation Timeline History -->
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-light py-3">
+                    <h6 class="mb-0 fw-bold text-success"><i class="bi bi-clock-history me-2"></i>Offer History</h6>
+                </div>
+                <div class="card-body p-3">
+                    <div class="position-relative ps-4" style="border-left: 2px dashed #e9ecef; margin-left: 10px;">
+                        <!-- Original Listed Price node -->
+                        <div class="position-relative mb-3">
+                            <span class="position-absolute translate-middle bg-success border border-white rounded-circle" 
+                                  style="left: -20px; top: 10px; width: 12px; height: 12px;"></span>
+                            <div class="small">
+                                <div class="text-muted small">Base Listing</div>
+                                <div class="fw-bold">Listed Price: ₹{{ session.listed_price }}/{{ session.product.unit }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Offer Steps -->
+                        {% for offer in offers %}
+                        <div class="position-relative mb-3">
+                            <span class="position-absolute translate-middle bg-{% if offer.status == 'ACCEPTED' %}success{% elif offer.status == 'REJECTED' or offer.status == 'CANCELLED' %}danger{% else %}warning{% endif %} border border-white rounded-circle" 
+                                  style="left: -20px; top: 10px; width: 12px; height: 12px;"></span>
+                            <div class="small">
+                                <div class="text-muted small">{{ offer.created_at.strftime('%d %b %Y, %I:%M %p') }}</div>
+                                <div class="fw-bold">
+                                    {% if offer.sender_id == current_user.id %}
+                                    You
+                                    {% else %}
+                                    {{ offer.sender.full_name }}
+                                    {% endif %}
+                                    {% if offer.offer_type == 'INITIAL' %}
+                                    proposed
+                                    {% elif offer.offer_type == 'COUNTER' %}
+                                    countered
+                                    {% elif offer.offer_type == 'ACCEPTANCE' %}
+                                    accepted
+                                    {% elif offer.offer_type == 'REJECTION' %}
+                                    rejected
+                                    {% elif offer.offer_type == 'CANCEL' %}
+                                    cancelled
+                                    {% endif %}:
+                                </div>
+                                {% if offer.offer_price > 0 %}
+                                <div class="text-success fw-bold">₹{{ offer.offer_price }}/{{ session.product.unit }} (Total: ₹{{ offer.total_amount }})</div>
+                                {% endif %}
+                                {% if offer.message %}
+                                <div class="text-muted fst-italic">"{{ offer.message }}"</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Conversation Area -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow rounded-4 overflow-hidden" style="height: 600px; display: flex; flex-direction: column;">
+                <div class="card-header bg-success text-white py-3 d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-chat-left-dots-fill fs-4 me-3"></i>
+                        <div>
+                            <h5 class="mb-0 fw-bold">
+                                {% if current_user.id == session.buyer_id %}
+                                Farmer: {{ session.farmer.full_name }}
+                                {% else %}
+                                Buyer: {{ session.buyer.full_name }}
+                                {% endif %}
+                            </h5>
+                            <small class="opacity-75">Bargaining Conversation</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Box Content -->
+                <div class="card-body p-4 bg-light flex-grow-1 overflow-auto" id="chatBox">
+                    {% for offer in offers %}
+                        {% if offer.offer_type in ['INITIAL', 'COUNTER', 'ACCEPTANCE'] %}
+                        <div class="d-flex flex-column mb-3 {% if offer.sender_id == current_user.id %}align-items-end{% else %}align-items-start{% endif %}">
+                            <div class="d-flex align-items-center mb-1">
+                                <small class="text-muted small fw-bold me-2">{{ offer.sender.full_name }}</small>
+                                <small class="text-muted" style="font-size: 0.75rem;">{{ offer.created_at.strftime('%I:%M %p') }}</small>
+                            </div>
+                            <div class="card border-0 p-3 rounded-4 shadow-sm {% if offer.sender_id == current_user.id %}bg-success text-white{% else %}bg-white text-dark{% endif %}" 
+                                 style="max-width: 80%;">
+                                <div class="d-flex align-items-center gap-3 mb-2">
+                                    <div class="p-2 rounded bg-opacity-10 {% if offer.sender_id == current_user.id %}bg-white text-white{% else %}bg-success text-success{% endif %}">
+                                        <i class="bi bi-tag-fill fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <div class="small opacity-75">Offer Price</div>
+                                        <h5 class="fw-bold mb-0">₹{{ offer.offer_price }}/{{ session.product.unit }}</h5>
+                                    </div>
+                                    <div class="ms-3">
+                                        <div class="small opacity-75">Quantity</div>
+                                        <div class="fw-bold mb-0">{{ offer.quantity }} {{ session.product.unit }}</div>
+                                    </div>
+                                </div>
+                                {% if offer.message %}
+                                <p class="mb-0 mt-2 border-top pt-2 border-light border-opacity-25">{{ offer.message }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if session.status == 'ACCEPTED' %}
+                    <div class="alert alert-success text-center border-0 shadow-sm rounded-3 py-4 my-4">
+                        <h4 class="fw-bold mb-2">🎉 {{ _('deal_accepted') }}</h4>
+                        <p class="mb-0">Product: <strong>{{ session.product.title }}</strong> &bull; Quantity: <strong>{{ session.quantity }} {{ session.product.unit }}</strong></p>
+                        <h3 class="text-success fw-bold my-2">Final Price: ₹{{ session.final_price }}/{{ session.product.unit }}</h3>
+                        <h4 class="fw-bold">Total: ₹{{ session.final_price * session.quantity }}</h4>
+                        {% if current_user.role == 'buyer' %}
+                        <a href="{{ url_for('order.checkout', order_id=session.order.id) }}" class="btn btn-warning btn-lg fw-bold rounded-pill px-5 mt-3 shadow-sm">
+                            <i class="bi bi-cart-check-fill me-2"></i>Pay & Checkout Now
+                        </a>
+                        {% else %}
+                        <p class="text-muted mt-3 mb-0 small"><i class="bi bi-info-circle me-1"></i>Awaiting checkout payment from the buyer.</p>
+                        {% endif %}
+                    </div>
+                    {% elif session.status == 'COMPLETED' %}
+                    <div class="alert alert-success text-center border-0 shadow-sm rounded-3 py-4 my-4">
+                        <h4 class="fw-bold mb-2"><i class="bi bi-check-circle-fill me-2"></i>Negotiation Completed</h4>
+                        <p class="mb-0">Buyer has completed checkout for this deal. Product stock has been updated.</p>
+                    </div>
+                    {% elif session.status == 'REJECTED' %}
+                    <div class="alert alert-danger text-center border-0 shadow-sm rounded-3 py-4 my-3">
+                        <h5 class="fw-bold mb-1"><i class="bi bi-x-circle-fill me-2"></i>Negotiation Rejected</h5>
+                        <p class="mb-0">This bargaining session has been rejected.</p>
+                    </div>
+                    {% elif session.status == 'CANCELLED' %}
+                    <div class="alert alert-secondary text-center border-0 shadow-sm rounded-3 py-4 my-3">
+                        <h5 class="fw-bold mb-1"><i class="bi bi-slash-circle-fill me-2"></i>Session Cancelled</h5>
+                        <p class="mb-0">This bargaining session has been cancelled by one of the parties.</p>
+                    </div>
+                    {% elif session.status == 'EXPIRED' %}
+                    <div class="alert alert-secondary text-center border-0 shadow-sm rounded-3 py-4 my-3">
+                        <h5 class="fw-bold mb-1"><i class="bi bi-clock-fill me-2"></i>Session Expired</h5>
+                        <p class="mb-0">The 24-hour negotiation session time has expired. No further offers can be submitted.</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Suggested Pricing suggestion for Farmer -->
+                {% if suggestion %}
+                <div class="bg-warning-subtle text-warning-emphasis border-top border-warning-subtle p-3 text-center small fw-semibold">
+                    <i class="bi bi-lightbulb-fill me-1"></i>{{ _('suggested_response') }}: <strong>{{ suggestion }}</strong> 
+                    <span class="text-muted fw-normal">(only visible to you)</span>
+                </div>
+                {% endif %}
+
+                <!-- Bottom Chat Input & Actions Form -->
+                {% if session.status in ['PENDING', 'NEGOTIATING'] %}
+                    {% set latest_offer = offers[-1] %}
+                    <div class="card-footer bg-white border-light p-3">
+                        {% if latest_offer.sender_id != current_user.id %}
+                        <!-- Option Controls if User is Responding -->
+                        <div class="d-flex justify-content-center gap-2 mb-3">
+                            <!-- Accept Form -->
+                            <form action="{{ url_for('bargaining.accept_offer', session_id=session.id) }}" method="POST">
+                                <button type="submit" class="btn btn-success fw-semibold px-4 rounded-pill">
+                                    <i class="bi bi-check-lg me-1"></i>{{ _('accept') }} Offer (₹{{ latest_offer.offer_price }})
+                                </button>
+                            </form>
+
+                            <!-- Reject Form -->
+                            <form action="{{ url_for('bargaining.reject_offer', session_id=session.id) }}" method="POST">
+                                <button type="submit" class="btn btn-outline-danger fw-semibold px-4 rounded-pill" 
+                                        onclick="return confirm('Are you sure you want to reject this offer?');">
+                                    <i class="bi bi-x-lg me-1"></i>{{ _('reject') }}
+                                </button>
+                            </form>
+
+                            <button type="button" class="btn btn-outline-primary fw-semibold px-4 rounded-pill" 
+                                    data-bs-toggle="collapse" data-bs-target="#counterFormBlock">
+                                <i class="bi bi-arrow-left-right me-1"></i>{{ _('counter_offer') }}
+                            </button>
+                        </div>
+                        {% else %}
+                        <div class="text-center mb-3">
+                            <span class="text-muted small"><i class="bi bi-hourglass-split me-1"></i>Waiting for the other party to respond...</span>
+                            <form action="{{ url_for('bargaining.cancel_offer', session_id=session.id) }}" method="POST" class="d-inline ms-2">
+                                <button type="submit" class="btn btn-link btn-sm text-danger p-0 border-0" 
+                                        onclick="return confirm('Are you sure you want to cancel this bargaining session?');">
+                                    {{ _('cancel') }} Bargaining
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
+
+                        <!-- Counter Offer Collapse Block -->
+                        <div class="collapse border-top pt-3" id="counterFormBlock">
+                            <form action="{{ url_for('bargaining.counter_offer', session_id=session.id) }}" method="POST">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold">{{ _('quantity') }}</label>
+                                        <input type="number" 
+                                               class="form-control form-control-sm" 
+                                               name="quantity" 
+                                               min="1" 
+                                               max="{{ session.product.quantity }}" 
+                                               value="{{ session.quantity }}" 
+                                               required>
+                                        <div class="form-text small opacity-75">Max: {{ session.product.quantity }} {{ session.product.unit }}</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-bold">{{ _('counter_offer') }} (₹/{{ session.product.unit }})</label>
+                                        <input type="number" 
+                                               class="form-control form-control-sm text-success fw-bold" 
+                                               name="offer_price" 
+                                               step="any" 
+                                               placeholder="Enter counter price" 
+                                               required>
+                                    </div>
+                                    <div class="col-md-4 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-warning btn-sm w-100 fw-bold rounded-3">
+                                            Submit Counter
+                                        </button>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small fw-bold">{{ _('message') }} (Optional)</label>
+                                        <textarea class="form-control form-control-sm" name="message" rows="2" placeholder="Describe counter offer details..."></textarea>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto scroll to bottom of chatbox on page load
+document.addEventListener("DOMContentLoaded", function() {
+    const chatBox = document.getElementById("chatBox");
+    if (chatBox) {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+});
+</script>
+{% endblock %}

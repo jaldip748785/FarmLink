@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('login') }} | {{ _('farmlink') }}{% endblock %}
+
+{% block content %}
+
+<div class="d-flex align-items-center justify-content-center py-4 px-2 min-vh-100" style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
+    <div class="w-100" style="max-width: 420px;">
+        
+        <!-- Welcome Brand Header (Compact) -->
+        <div class="text-center mb-3">
+            <div class="d-inline-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm p-2 mb-2" style="width: 54px; height: 54px;">
+                <i class="bi bi-leaf-fill text-success fs-3"></i>
+            </div>
+            <h3 class="fw-bold mb-0 text-dark">{{ _('farmlink') }}</h3>
+            <p class="text-muted small mb-0">{{ _('welcome_back_desc') }}</p>
+        </div>
+
+        <!-- Login Card -->
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+
+            <!-- Card Header -->
+            <div class="card-header bg-success text-white text-center py-3 px-4 border-0" style="background: linear-gradient(135deg, var(--primary, #198754) 0%, var(--primary-dark, #146c43) 100%);">
+                <h5 class="fw-bold mb-0">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>{{ _('login_to_account') }}
+                </h5>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body p-4">
+                <form action="{{ url_for('auth.login') }}" method="POST" autocomplete="off">
+
+                    <!-- Email / Mobile -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary mb-1">
+                            <i class="bi bi-envelope-fill me-1"></i>{{ _('email_or_mobile') }}
+                        </label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="username"
+                            placeholder="{{ _('enter_email_or_mobile') }}"
+                            autocomplete="off"
+                            required>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary mb-1">
+                            <i class="bi bi-lock-fill me-1"></i>{{ _('password') }}
+                        </label>
+                        <input
+                            type="password"
+                            class="form-control"
+                            name="password"
+                            placeholder="{{ _('enter_password') }}"
+                            autocomplete="current-password"
+                            required>
+                    </div>
+
+                    <!-- Captcha Verification -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary mb-1">
+                            <i class="bi bi-shield-lock me-1"></i>{{ _('security_verification') }}
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text fw-bold bg-light text-success px-3 border-end-0" style="letter-spacing: 2px;">
+                                {{ captcha_question }}
+                            </span>
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="captcha_answer"
+                                placeholder="{{ _('enter_answer') }}"
+                                required>
+                        </div>
+                    </div>
+
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="d-flex justify-content-between align-items-center gap-3 mb-3 px-2">
+                        <div class="form-check d-flex align-items-center gap-2 mb-0 ps-0">
+                            <input
+                                class="form-check-input mt-0"
+                                type="checkbox"
+                                id="remember"
+                                style="cursor: pointer; margin-left: 0;">
+                            <label class="form-check-label small text-muted user-select-none mb-0" for="remember" style="cursor: pointer;">
+                                {{ _('remember_me') }}
+                            </label>
+                        </div>
+                        <a href="{{ url_for('auth.forgot_password') }}" class="text-decoration-none small text-success fw-semibold me-1">
+                            {{ _('forgot_password') }}
+                        </a>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid mb-3">
+                        <button
+                            type="submit"
+                            class="btn btn-success fw-bold py-2 shadow-sm">
+                            <i class="bi bi-box-arrow-in-right me-1"></i>{{ _('login_now') }}
+                        </button>
+                    </div>
+
+                    <!-- OTP / Alternate option link -->
+                    <div class="text-center">
+                        <a href="{{ url_for('auth.forgot_password') }}" class="btn btn-outline-secondary btn-sm w-100 py-1 text-muted">
+                            <i class="bi bi-shield-lock me-1"></i>{{ _('forgot_password') }} / OTP
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- Footer -->
+            <div class="card-footer bg-light border-top text-center py-3 px-4">
+                <p class="mb-0 small text-muted">
+                    {{ _('no_account') }}
+                    <a href="{{ url_for('auth.register') }}" class="text-success fw-bold text-decoration-none">
+                        {{ _('register_here') }}
+                    </a>
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Trust Indicators -->
+        <div class="d-flex justify-content-around text-center mt-3 text-muted small">
+            <div>
+                <i class="bi bi-shield-check text-success me-1"></i>{{ _('secure') }}
+            </div>
+            <div>
+                <i class="bi bi-lightning-charge text-success me-1"></i>{{ _('fast') }}
+            </div>
+            <div>
+                <i class="bi bi-star-fill text-success me-1"></i>{{ _('trusted') }}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+// Prevent browser autofill on login form
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (form) {
+        form.reset();
+    }
+});
+
+// Prevent autofill on focus
+window.addEventListener('pageshow', function(event) {
+    const form = document.querySelector('form');
+    if (form) {
+        form.reset();
+    }
+});
+</script>
+
+{% endblock %}

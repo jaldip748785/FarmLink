@@ -1,0 +1,60 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Review Farmer Verification | FarmLink Admin{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <a href="{{ url_for('admin.farmer_verifications') }}" class="text-success">Back to requests</a>
+    <div class="row g-4 mt-1">
+        <div class="col-lg-7">
+            <div class="bg-white rounded shadow-sm p-4">
+                <h2 class="mb-4">Farmer Verification Review</h2>
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Farmer Name</dt><dd class="col-sm-7">{{ verification.farmer.full_name }}</dd>
+                    <dt class="col-sm-5">Mobile</dt><dd class="col-sm-7">{{ verification.farmer.phone }}</dd>
+                    <dt class="col-sm-5">Email</dt><dd class="col-sm-7">{{ verification.farmer.email }}</dd>
+                    <dt class="col-sm-5">District</dt><dd class="col-sm-7">{{ verification.farmer.district.name if verification.farmer.district else '-' }}</dd>
+                    <dt class="col-sm-5">Taluka</dt><dd class="col-sm-7">{{ verification.farmer.taluka.name if verification.farmer.taluka else '-' }}</dd>
+                    <dt class="col-sm-5">Village</dt><dd class="col-sm-7">{{ verification.farmer.village.name if verification.farmer.village else '-' }}</dd>
+                    <dt class="col-sm-5">Land Documents</dt><dd class="col-sm-7">7/12 and Adhar card</dd>
+                    <dt class="col-sm-5">Submitted</dt><dd class="col-sm-7">{{ verification.submitted_at.strftime('%d %b %Y, %I:%M %p') }}</dd>
+                    <dt class="col-sm-5">Current Status</dt><dd class="col-sm-7">{{ verification.status }}</dd>
+                </dl>
+                <p class="small text-muted mt-4 mb-0">The uploaded document is evidence submitted for Admin review and does not by itself establish official land ownership verification.</p>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="bg-white rounded shadow-sm p-4">
+                <div class="d-grid gap-2 mb-3">
+                    {% for document in verification.uploaded_712_documents %}
+                        <a class="btn btn-outline-primary" target="_blank" rel="noopener" href="{{ url_for('admin.farmer_verification_document', verification_id=verification.id, type='7/12', index=loop.index0) }}">View 7/12 Image {{ loop.index }}</a>
+                    {% endfor %}
+                    {% for document in verification.uploaded_8a_documents %}
+                        <a class="btn btn-outline-primary" target="_blank" rel="noopener" href="{{ url_for('admin.farmer_verification_document', verification_id=verification.id, type='Adhar card', index=loop.index0) }}">View Adhar card Image {{ loop.index }}</a>
+                    {% endfor %}
+                </div>
+                {% if verification.status == 'PENDING' %}
+                    <form method="post" action="{{ url_for('admin.approve_farmer_verification', verification_id=verification.id) }}" class="mb-3">
+                        <button class="btn btn-success w-100" type="submit">Approve</button>
+                    </form>
+                    <form method="post" action="{{ url_for('admin.reject_farmer_verification', verification_id=verification.id) }}">
+                        <label class="form-label fw-semibold" for="rejection_reason">Rejection reason</label>
+                        <select class="form-select mb-2" id="rejection_reason" onchange="document.getElementById('reasonText').value = this.value === 'Other' ? '' : this.value">
+                            <option value="">Select a reason</option>
+                            <option>Survey number does not match</option>
+                            <option>Land ownership could not be verified</option>
+                            <option>Document is invalid or unclear</option>
+                            <option>Farmer details do not match</option>
+                            <option>Other</option>
+                        </select>
+                        <textarea class="form-control mb-2" id="reasonText" name="rejection_reason" rows="3" placeholder="Additional Reason" required></textarea>
+                        <button class="btn btn-danger w-100" type="submit">Reject</button>
+                    </form>
+                {% elif verification.rejection_reason %}
+                    <p><strong>Reason:</strong> {{ verification.rejection_reason }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

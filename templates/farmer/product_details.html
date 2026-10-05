@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.title }} | FarmLink{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 fw-bold mb-1">{{ product.title }}</h1>
+            <p class="text-muted mb-0">{{ _('product_details') }}</p>
+        </div>
+        <a href="{{ url_for('farmer.my_products') }}" class="btn btn-outline-success">
+            <i class="bi bi-arrow-left me-1"></i>{{ _('back') }}
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm overflow-hidden">
+                {% if product.image %}
+                    <img src="{{ url_for('static', filename='uploads/' + product.image) }}"
+                         class="w-100"
+                         style="height: 360px; object-fit: cover;"
+                         alt="{{ product.title }}">
+                {% else %}
+                    <div class="bg-light d-flex align-items-center justify-content-center text-muted"
+                         style="height: 360px;">
+                        <i class="bi bi-image fs-1"></i>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
+                        <div>
+                            <span class="badge bg-light text-dark border mb-2">
+                                {{ product.category.name if product.category else 'N/A' }}
+                            </span>
+                            <h2 class="h3 fw-bold mb-0">{{ product.title }}</h2>
+                        </div>
+                        <span class="badge {% if product.status == 'Available' %}bg-success-subtle text-success{% else %}bg-secondary-subtle text-secondary{% endif %} rounded-pill px-3 py-2">
+                            {{ product.status or 'Available' }}
+                        </span>
+                    </div>
+
+                    <div class="display-6 fw-bold text-success mb-4">
+                        ₹{{ product.price }}
+                        <small class="fs-6 fw-normal text-muted">/ {{ product.unit or '' }}</small>
+                    </div>
+
+                    <dl class="row mb-4">
+                        <dt class="col-sm-5 text-muted">{{ _('available_quantity') }}</dt>
+                        <dd class="col-sm-7">{{ product.quantity }} {{ product.unit or '' }}</dd>
+                        <dt class="col-sm-5 text-muted">{{ _('bargaining') }}</dt>
+                        <dd class="col-sm-7">{{ _('enabled') if product.allow_bargaining else _('disabled') }}</dd>
+                        {% if product.allow_bargaining %}
+                        <dt class="col-sm-5 text-muted">{{ _('minimum_price') }}</dt>
+                        <dd class="col-sm-7">₹{{ product.min_price }}</dd>
+                        {% endif %}
+                        <dt class="col-sm-5 text-muted">{{ _('harvest_location') }}</dt>
+                        <dd class="col-sm-7">
+                            {{ product.village.name if product.village else 'N/A' }}{% if product.taluka %}, {{ product.taluka.name }}{% endif %}{% if product.district %}, {{ product.district.name }}{% endif %}
+                        </dd>
+                    </dl>
+
+                    <h3 class="h5 fw-bold">{{ _('description') }}</h3>
+                    <p class="text-muted mb-4">{{ product.description or _('no_description_provided') }}</p>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ url_for('farmer.edit_product', id=product.id) }}" class="btn btn-success">
+                            <i class="bi bi-pencil-square me-1"></i>{{ _('edit') }}
+                        </a>
+                        <a href="{{ url_for('farmer.my_products') }}" class="btn btn-outline-secondary">
+                            {{ _('view_all') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

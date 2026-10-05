@@ -1,0 +1,226 @@
+/* ==========================================
+   FarmLink Authentication CSS
+   login.html & register.html
+========================================== */
+
+/* Page Background */
+
+body{
+    background:#f4f7f6;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+/* Authentication Section */
+
+.auth-section{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:40px 15px;
+}
+
+/* Card */
+
+.auth-card{
+    width:100%;
+    max-width:500px;
+    border:none;
+    border-radius:18px;
+    overflow:hidden;
+    background:#ffffff;
+    box-shadow:0 12px 30px rgba(0,0,0,.12);
+}
+
+/* Header */
+
+.auth-header{
+    background:#198754;
+    color:#ffffff;
+    text-align:center;
+    padding:25px;
+}
+
+.auth-header h2{
+    margin:0;
+    font-weight:bold;
+}
+
+.auth-header p{
+    margin-top:8px;
+    margin-bottom:0;
+    color:#d9f7e8;
+}
+
+/* Body */
+
+.auth-body{
+    padding:35px;
+}
+
+/* Labels */
+
+.form-label{
+    font-weight:600;
+    color:#444;
+}
+
+/* Inputs */
+
+.form-control,
+.form-select{
+    height:48px;
+    border-radius:10px;
+    border:1px solid #ced4da;
+}
+
+.form-control:focus,
+.form-select:focus{
+    border-color:#198754;
+    box-shadow:0 0 0 .2rem rgba(25,135,84,.20);
+}
+
+/* Textarea */
+
+textarea.form-control{
+    min-height:120px;
+}
+
+/* Buttons */
+
+.btn-success{
+    height:48px;
+    border-radius:10px;
+    font-weight:600;
+}
+
+.btn-success:hover{
+    background:#157347;
+}
+
+/* Links */
+
+.auth-link{
+    text-align:center;
+    margin-top:20px;
+}
+
+.auth-link a{
+    text-decoration:none;
+    color:#198754;
+    font-weight:600;
+}
+
+.auth-link a:hover{
+    text-decoration:underline;
+}
+
+/* Divider */
+
+.auth-divider{
+    text-align:center;
+    margin:25px 0;
+    position:relative;
+}
+
+.auth-divider::before{
+    content:"";
+    position:absolute;
+    top:50%;
+    left:0;
+    width:40%;
+    height:1px;
+    background:#ddd;
+}
+
+.auth-divider::after{
+    content:"";
+    position:absolute;
+    top:50%;
+    right:0;
+    width:40%;
+    height:1px;
+    background:#ddd;
+}
+
+.auth-divider span{
+    background:#fff;
+    padding:0 15px;
+    color:#777;
+}
+
+/* Icons */
+
+.input-group-text{
+    background:#198754;
+    color:#ffffff;
+    border:none;
+}
+
+/* Alerts */
+
+.alert{
+    border-radius:10px;
+}
+
+/* Logo */
+
+.auth-logo{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.auth-logo img{
+    width:90px;
+    height:90px;
+    object-fit:contain;
+}
+
+.auth-logo h1{
+    color:#198754;
+    margin-top:10px;
+    font-size:30px;
+    font-weight:bold;
+}
+
+/* Checkbox */
+
+.form-check-input:checked{
+    background:#198754;
+    border-color:#198754;
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+    .auth-body{
+        padding:25px;
+    }
+
+    .auth-header{
+        padding:20px;
+    }
+
+    .auth-header h2{
+        font-size:24px;
+    }
+
+}
+
+@media(max-width:576px){
+
+    .auth-card{
+        margin:10px;
+    }
+
+    .btn{
+        width:100%;
+    }
+
+    .auth-logo img{
+        width:70px;
+        height:70px;
+    }
+
+}

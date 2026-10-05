@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - FarmLink{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="mb-4">
+        <a href="/buyer/cart" class="text-decoration-none text-muted"><i class="bi bi-arrow-left me-1"></i> Back to Cart</a>
+        <h2 class="fw-bold mt-2"><i class="bi bi-credit-card-2-front text-success me-2"></i>Checkout</h2>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">Delivery Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-3 text-muted">Name</div>
+                        <div class="col-sm-9 fw-semibold">{{ current_user.full_name }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3 text-muted">Contact</div>
+                        <div class="col-sm-9">{{ current_user.phone }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-3 text-muted">Address</div>
+                        <div class="col-sm-9">
+                            {{ current_user.address }}<br>
+                            {% if current_user.village %}{{ current_user.village.name }}, {% endif %}
+                            {% if current_user.taluka %}{{ current_user.taluka.name }}, {% endif %}
+                            {% if current_user.district %}{{ current_user.district.name }}{% endif %}
+                        </div>
+                    </div>
+                    <div class="alert alert-info bg-info-subtle border-0 mb-0">
+                        <i class="bi bi-info-circle-fill me-2"></i> To update your delivery details, please edit your <a href="/buyer/profile/edit" class="alert-link">Profile</a>.
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">Payment Method</h5>
+                </div>
+                <div class="card-body">
+                    <form action="/buyer/checkout" method="POST">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cash_on_delivery" checked>
+                            <label class="form-check-label fw-semibold" for="cod">
+                                Cash on Delivery (COD)
+                            </label>
+                            <div class="text-muted small mt-1">Pay when your order arrives.</div>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="payment_method" id="online" value="online_payment">
+                            <label class="form-check-label fw-semibold" for="online">
+                                Online Payment
+                            </label>
+                            <div class="text-muted small mt-1">Pay securely online using the marketplace simulation.</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg w-100 fw-bold">
+                            Place Order <i class="bi bi-check-circle ms-1"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 sticky-top" style="top: 20px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">Order Summary</h5>
+                    
+                    <ul class="list-group list-group-flush mb-3">
+                        {% for item in cart_items %}
+                        <li class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center border-0">
+                            <div>
+                                <h6 class="mb-0 text-truncate" style="max-width: 180px;">{{ item.product.title }}</h6>
+                                <small class="text-muted">Qty: {{ item.quantity }} x ₹{{ item.product.price }}</small>
+                            </div>
+                            <span class="fw-semibold">₹{{ item.product.price * item.quantity }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="fs-5 fw-bold">Total to Pay</span>
+                        <span class="fs-5 fw-bold text-success">₹{{ total_amount }}</span>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <small class="text-muted"><i class="bi bi-shield-check text-success me-1"></i> Secure direct marketplace.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

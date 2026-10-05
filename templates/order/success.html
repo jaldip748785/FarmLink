@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Order Successful | FarmLink{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow rounded-4 p-5">
+                <div class="mb-4">
+                    <i class="bi bi-check-circle-fill text-success display-1"></i>
+                </div>
+                <h2 class="fw-bold text-success mb-3">{{ _('order_success') }}!</h2>
+                <p class="text-muted mb-4">
+                    {{ _('order_success_desc') }}
+                </p>
+
+                <!-- Order Receipt Card -->
+                <div class="p-4 bg-light rounded-4 text-start mb-4">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2 text-success">{{ _('order_receipt') }}</h5>
+                    <table class="table table-sm table-borderless mb-0">
+                        <tr>
+                            <th width="40%">{{ _('order_ref_id') }}</th>
+                            <td class="text-end">#FL-ORD-{{ order.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ _('product_label') }}</th>
+                            <td class="text-end fw-bold">{{ order.product.title }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ _('quantity_label') }}</th>
+                            <td class="text-end">{{ order.quantity }} {{ order.product.unit }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ _('agreed_unit_price') }}</th>
+                            <td class="text-end fw-bold text-success">
+                                ₹{{ order.negotiated_price or order.original_price }}/{{ order.product.unit }}
+                            </td>
+                        </tr>
+                        <tr class="border-top">
+                            <th class="pt-2">{{ _('total_amount_paid') }}</th>
+                            <td class="text-end fs-5 fw-bold text-success pt-2">₹{{ order.total_amount }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('buyer.dashboard') }}" class="btn btn-success btn-lg rounded-pill">
+                        {{ _('go_to_dashboard') }}
+                    </a>
+                    <a href="/buyer/products" class="btn btn-outline-success btn-lg rounded-pill">
+                        {{ _('browse_more_products') }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

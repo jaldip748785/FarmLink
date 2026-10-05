@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}FarmLink - Fresh Farm Products Direct to You{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero py-5">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-3">{{ _('welcome_to_farmlink') }}</h1>
+                <p class="fs-5 mb-4">{{ _('hero_desc') }}</p>
+                
+                <!-- Quick Action Buttons -->
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <a href="/buyer/products" class="btn btn-light btn-lg w-100">
+                            <i class="bi bi-basket-fill"></i> {{ _('browse_products') }}
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="/auth/login" class="btn btn-outline-light btn-lg w-100">
+                            <i class="bi bi-person-circle"></i> {{ _('add_produce') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="{{ url_for('static', filename='images/banners/farm-banner.jpg') }}" class="img-fluid rounded-4 shadow-xl" alt="Fresh Farm Products" style="max-height: 400px; object-fit: cover;">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Key Features Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-2">{{ _('why_choose') }}</h2>
+            <p class="text-muted fs-5">{{ _('why_choose_desc') }}</p>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Feature 1 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 text-center p-4 stat-card">
+                    <i class="bi bi-hand-thumbs-up display-4 text-success mb-3"></i>
+                    <h5 class="fw-bold">{{ _('fresh_quality') }}</h5>
+                    <p class="text-muted small">{{ _('fresh_quality_desc') }}</p>
+                </div>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 text-center p-4 stat-card">
+                    <i class="bi bi-cash-coin display-4 text-success mb-3"></i>
+                    <h5 class="fw-bold">{{ _('fair_pricing') }}</h5>
+                    <p class="text-muted small">{{ _('fair_pricing_desc') }}</p>
+                </div>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 text-center p-4 stat-card">
+                    <i class="bi bi-lightning-charge display-4 text-success mb-3"></i>
+                    <h5 class="fw-bold">{{ _('quick_easy') }}</h5>
+                    <p class="text-muted small">{{ _('quick_easy_desc') }}</p>
+                </div>
+            </div>
+            
+            <!-- Feature 4 -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 text-center p-4 stat-card">
+                    <i class="bi bi-shield-check display-4 text-success mb-3"></i>
+                    <h5 class="fw-bold">{{ _('secure') }}</h5>
+                    <p class="text-muted small">{{ _('secure_desc') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Market Info Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-2">{{ _('market_rates') }}</h2>
+            <p class="text-muted fs-5">{{ _('today_market_rates') }}</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-12">
+                <div class="card apmc-feature-panel border-0 shadow hover-card">
+                    <div class="card-body p-4 p-lg-5 d-flex align-items-center justify-content-between gap-4">
+                        <div class="d-flex align-items-center gap-4">
+                            <i class="bi bi-graph-up display-3 text-success"></i>
+                            <div>
+                                <h5 class="fw-bold mb-2">{{ _('today_market_rates') }}</h5>
+                                <p class="text-muted mb-0">{{ _('market_rates') }}</p>
+                            </div>
+                        </div>
+                        <a href="{{ url_for('buyer.apmc_rates') }}" class="btn btn-success px-4 flex-shrink-0">
+                            <i class="bi bi-arrow-right"></i> {{ _('view_all') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="fw-bold mb-2">{{ _('fresh_farm_products') }}</h2>
+                <p class="text-muted">{{ _('nearby_products_desc') }}</p>
+            </div>
+            <a href="/buyer/products" class="btn btn-success">
+                <i class="bi bi-arrow-right"></i> {{ _('view_all') }}
+            </a>
+        </div>
+        
+        <div class="row g-4">
+            {% if featured_products %}
+                {% for product in featured_products %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 border-0 shadow-sm product-card">
+                        <!-- Product Image -->
+                        <div class="position-relative overflow-hidden" style="height: 250px;">
+                            <img src="{{ url_for('static', filename='uploads/' + product.image if product.image else 'uploads/products/default.jpg') }}" 
+                                 class="card-img-top w-100 h-100" 
+                                 style="object-fit: cover;"
+                                 alt="{{ product.title }}">
+                            <span class="badge bg-success position-absolute top-3 start-3">
+                                {{ product.category.name if product.category else _('fresh_quality') }}
+                            </span>
+                        </div>
+                        
+                        <!-- Product Details -->
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold mb-2">{{ product.title }}</h5>
+                            <p class="card-text text-muted small flex-grow-1">{{ product.description or _('fresh_quality_desc') }}</p>
+                            
+                            <!-- Price -->
+                            <div class="product-price mb-2">
+                                ₹{{ product.price }} <span class="product-unit">/ {{ product.unit }}</span>
+                            </div>
+                            
+                            <!-- Location & Stock -->
+                            <div class="mb-3">
+                                <div class="farmer-info mb-2">
+                                    <i class="bi bi-person-fill text-success"></i>
+                                    <small>{{ product.farmer.full_name if product.farmer else _('farmer') }}</small>
+                                </div>
+                                <div class="location-info">
+                                    <i class="bi bi-geo-alt-fill"></i>
+                                    <small>{{ product.village.name if product.village else '' }}</small>
+                                </div>
+                            </div>
+                            
+                            <!-- CTA Button -->
+                            <a href="/buyer/product/{{ product.id }}" class="btn btn-success w-100 mt-auto">
+                                <i class="bi bi-eye-fill"></i> View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info mb-0 text-center py-4">
+                        <i class="bi bi-info-circle display-6 mb-3 d-block"></i>
+                                <h5>{{ _('no_products_available_now') }}</h5>
+                                <p class="mb-0">{{ _('check_back_later') }}</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-success text-white">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-6">
+                <h2 class="fw-bold mb-3">{{ _('welcome_seller') }}</h2>
+                <p class="fs-5 mb-4">{{ _('join_today_desc') }}</p>
+                <div class="d-flex gap-3">
+                    <a href="/auth/register" class="btn btn-light btn-lg">
+                        <i class="bi bi-pencil-square"></i> {{ _('register_now') }}
+                    </a>
+                    <a href="/auth/login" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-box-arrow-in-right"></i> {{ _('login') }}
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <i class="bi bi-basket3-fill" style="font-size: 120px; opacity: 0.2;"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Video or Testimonial Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-2">How to Use FarmLink</h2>
+            <p class="text-muted fs-5">Simple steps to get started</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4 text-center">
+                <div class="mb-4">
+                    <span class="badge bg-success" style="font-size: 1.5rem; padding: 1rem;">1</span>
+                </div>
+                <h5 class="fw-bold mb-2">Register</h5>
+                <p class="text-muted">Create your account as a farmer or buyer</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="mb-4">
+                    <span class="badge bg-success" style="font-size: 1.5rem; padding: 1rem;">2</span>
+                </div>
+                <h5 class="fw-bold mb-2">Browse or List</h5>
+                <p class="text-muted">Browse products or add your produce to sell</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="mb-4">
+                    <span class="badge bg-success" style="font-size: 1.5rem; padding: 1rem;">3</span>
+                </div>
+                <h5 class="fw-bold mb-2">Transact Safely</h5>
+                <p class="text-muted">Complete transactions with secure payments</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Help Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow hover-card text-center">
+                    <div class="card-body p-4">
+                        <i class="bi bi-headset display-5 text-success mb-3"></i>
+                        <h5 class="fw-bold">{{ _('help_support') }}</h5>
+                        <p class="text-muted mb-3">{{ _('help_support') }}</p>
+                        <a href="mailto:support@farmlink.com" class="btn btn-success btn-sm">
+                            <i class="bi bi-arrow-right"></i> {{ _('contact_us') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.hover-card {
+    transition: all 0.3s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+</style>
+
+{% endblock %}

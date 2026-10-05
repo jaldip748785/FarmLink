@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Product | FarmLink{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-10">
+
+            <div class="card shadow border-0">
+
+                <div class="card-header bg-warning text-dark">
+
+                    <h3 class="mb-0">
+                        <i class="bi bi-pencil-square"></i>
+                        {{ _('edit_product') }}
+                    </h3>
+
+                </div>
+
+                <div class="card-body">
+
+                    <form method="POST"
+                          action="#"
+                          enctype="multipart/form-data">
+
+                        <div class="row">
+
+                            <!-- Product Name -->
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    {{ _('product_name') }}
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    name="title"
+                                    value="{{ product.title }}"
+                                    required>
+
+                            </div>
+
+                            <!-- Category -->
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    {{ _('category') }}
+                                </label>
+
+                                <select class="form-select"
+                                        name="category_id"
+                                        required>
+
+                                    <option value="">{{ _('select_category') }}</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}" {% if product.category_id == category.id %}selected{% endif %}>{{ _(category.name) }}</option>
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+                            <!-- Price -->
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    {{ _('price_rupee') }}
+                                </label>
+
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    name="price"
+                                    value="{{ product.price }}"
+                                    required>
+
+                            </div>
+                            
+
+
+                            <!-- Quantity -->
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    {{ _('available_quantity') }}
+                                </label>
+
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    name="quantity"
+                                    value="{{ product.quantity }}"
+                                    required>
+
+                            </div>
+
+                            <!-- Unit -->
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    {{ _('unit') }}
+                                </label>
+
+                                <select class="form-select"
+                                        name="unit">
+
+                                    <option value="Kg" {% if product.unit == 'Kg' %}selected{% endif %}>{{ _('kg') }}</option>
+                                    <option value="Quintal" {% if product.unit == 'Quintal' %}selected{% endif %}>{{ _('quintal') }}</option>
+                                    <option value="Ton" {% if product.unit == 'Ton' %}selected{% endif %}>{{ _('ton') }}</option>
+                                    <option value="Litre" {% if product.unit == 'Litre' %}selected{% endif %}>{{ _('litre') }}</option>
+                                    <option value="Piece" {% if product.unit == 'Piece' %}selected{% endif %}>{{ _('piece') }}</option>
+
+                                </select>
+
+                            </div>
+
+                            <!-- Harvest Date -->
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    {{ _('harvest_date') }}
+                                </label>
+
+                                <input
+                                    type="date"
+                                    class="form-control"
+                                    name="harvest_date"
+                                    value="2026-07-05">
+
+                            </div>
+
+                            <!-- Current Image -->
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    {{ _('current_product_image') }}
+                                </label>
+
+                                <br>
+
+                                <img src="{{ url_for('static', filename='uploads/' + product.image if product.image else 'uploads/products/default.jpg') }}"
+                                     class="img-thumbnail"
+                                     width="180">
+
+                            </div>
+
+                            <!-- Upload New Image -->
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    {{ _('change_product_image') }}
+                                </label>
+
+                                <input
+                                    type="file"
+                                    class="form-control"
+                                    name="image"
+                                    accept="image/*">
+
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    {{ _('availability') }}
+                                </label>
+
+                                <select class="form-select"
+                                        name="status">
+
+                                    <option value="Available" {% if product.status == 'Available' %}selected{% endif %}>{{ _('available') }}</option>
+                                    <option value="Sold" {% if product.status == 'Sold' %}selected{% endif %}>{{ _('sold') }}</option>
+
+                                </select>
+
+                            </div>
+
+                            <!-- Allow Bargaining -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    {{ _('allow_bargaining') }}
+                                </label>
+                                <select class="form-select" name="allow_bargaining" onchange="toggleMinPrice(this.value)">
+                                    <option value="0" {% if not product.allow_bargaining %}selected{% endif %}>{{ _('no') }}</option>
+                                    <option value="1" {% if product.allow_bargaining %}selected{% endif %}>{{ _('yes') }}</option>
+                                </select>
+                            </div>
+
+                            <!-- Minimum Price -->
+                            <div class="col-md-6 mb-3" id="minPriceGroup" style="{% if product.allow_bargaining %}display: block;{% else %}display: none;{% endif %}">
+                                <label class="form-label">
+                                    {{ _('min_acceptable_price') }}
+                                </label>
+                                <input type="number"
+                                       class="form-control"
+                                       id="minPriceInput"
+                                       name="min_price"
+                                       placeholder="{{ _('enter_min_acceptable_price') }}"
+                                       step="any"
+                                       value="{{ product.min_price }}">
+                                <div class="form-text text-muted">{{ _('min_price_private_desc') }}</div>
+                            </div>
+
+                            <script>
+                            function toggleMinPrice(val) {
+                                const group = document.getElementById('minPriceGroup');
+                                const input = document.getElementById('minPriceInput');
+                                if (val === '1') {
+                                    group.style.display = 'block';
+                                    input.setAttribute('required', 'required');
+                                } else {
+                                    group.style.display = 'none';
+                                    input.removeAttribute('required');
+                                }
+                            }
+                            </script>
+
+                            <!-- Product Listing Location -->
+                            <div class="col-12 mb-3">
+                                <div class="card bg-light border-0 p-3 rounded-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-geo-alt-fill text-warning fs-4 me-3"></i>
+                                        <div>
+                                            <h6 class="mb-1 text-dark fw-bold">{{ _('location_from_profile') }}</h6>
+                                            <p class="mb-0 text-muted small">
+                                                {% if current_user.village %}{{ current_user.village.name }}, {% endif %}
+                                                {% if current_user.taluka %}{{ current_user.taluka.name }}, {% endif %}
+                                                {% if current_user.district %}{{ current_user.district.name }}{% endif %}
+                                                {% if current_user.address %} &bull; {{ current_user.address }}{% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-12 mb-4">
+
+                                <label class="form-label">
+                                    {{ _('product_description') }}
+                                </label>
+
+                                <textarea
+                                    class="form-control"
+                                    rows="5"
+                                    name="description">{{ product.description }}</textarea>
+
+                            </div>
+
+                        </div>
+
+                        <div class="text-center">
+
+                            <button
+                                type="submit"
+                                class="btn btn-warning btn-lg">
+
+                                <i class="bi bi-save-fill"></i>
+                                {{ _('update_product') }}
+
+                            </button>
+
+                            <a href="/farmer/products"
+                               class="btn btn-secondary btn-lg ms-2">
+
+                                {{ _('cancel') }}
+
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+{% block scripts %}
+
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}500 - Server Error | FarmLink{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="text-center">
+
+        <i class="bi bi-server text-danger display-1"></i>
+
+        <h1 class="display-3 fw-bold mt-3">
+            500
+        </h1>
+
+        <h3 class="mb-3">
+            Internal Server Error
+        </h3>
+
+        <p class="text-muted mb-4">
+            Something went wrong on our server. Please try again later.
+        </p>
+
+        <a href="/" class="btn btn-success btn-lg">
+            <i class="bi bi-arrow-clockwise"></i>
+            Return to Home
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

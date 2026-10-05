@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout | FarmLink{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-success text-white py-3">
+                    <h3 class="mb-0 fw-bold"><i class="bi bi-shield-check me-2"></i>{{ _('order_checkout') }}</h3>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Order Items Breakdown -->
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">{{ _('order_items') }}</h5>
+                    <div class="d-flex align-items-center mb-4 p-3 bg-light rounded-3">
+                        {% if product.image %}
+                        <img src="{{ url_for('static', filename='uploads/' + product.image) }}" 
+                             class="rounded-3 me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                        {% endif %}
+                        <div class="flex-grow-1">
+                            <h5 class="fw-bold mb-1">{{ product.title }}</h5>
+                            <p class="text-muted mb-0">{{ _('quantity') }} <strong>{{ order.quantity }} {{ product.unit }}</strong></p>
+                        </div>
+                        <div class="text-end">
+                            {% if order.negotiated_price %}
+                            <div class="text-decoration-line-through text-muted small">₹{{ order.original_price }}/{{ product.unit }}</div>
+                            <div class="fs-5 fw-bold text-success">₹{{ order.negotiated_price }}/{{ product.unit }}</div>
+                            {% else %}
+                            <div class="fs-5 fw-bold text-success">₹{{ order.original_price }}/{{ product.unit }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Shipping Address details -->
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">{{ _('shipping_information') }}</h5>
+                    <div class="mb-4">
+                        <table class="table table-sm table-borderless">
+                            <tr>
+                                <th width="25%">{{ _('full_name_label') }}</th>
+                                <td>{{ current_user.full_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ _('phone_mobile_label') }}</th>
+                                <td>{{ current_user.phone }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ _('delivery_address_label') }}</th>
+                                <td>
+                                    {{ current_user.address }}<br>
+                                    <small class="text-muted">
+                                        {{ current_user.village.name if current_user.village else '' }}, 
+                                        {{ current_user.taluka.name if current_user.taluka else '' }}, 
+                                        {{ current_user.district.name if current_user.district else '' }}
+                                    </small>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Price calculation list -->
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">{{ _('payment_summary') }}</h5>
+                    <div class="p-3 bg-success bg-opacity-10 rounded-3 mb-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>{{ _('subtotal') }}</span>
+                            <span class="fw-bold">₹{{ order.total_amount }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>{{ _('delivery_charges') }}</span>
+                            <span class="text-success fw-bold">{{ _('free') }}</span>
+                        </div>
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fs-5 fw-bold">{{ _('grand_total') }}</span>
+                            <span class="fs-3 fw-bold text-success">₹{{ order.total_amount }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Payment Simulation Form -->
+                    <form action="{{ url_for('order.checkout', order_id=order.id) }}" method="POST">
+                        <h5 class="fw-bold mb-3 border-bottom pb-2">{{ _('payment_method') }}</h5>
+                        <div class="mb-4">
+                            <div class="form-check p-3 border rounded-3 mb-2 d-flex align-items-center">
+                                <input class="form-check-input ms-0 me-3" type="radio" name="payment_method" id="cod" value="cash_on_delivery" checked>
+                                <label class="form-check-label w-100" for="cod">
+                                    <div class="fw-bold"><i class="bi bi-cash me-1"></i>{{ _('cash_on_delivery') }}</div>
+                                    <small class="text-muted">{{ _('cod_desc') }}</small>
+                                </label>
+                            </div>
+                            <div class="form-check p-3 border rounded-3 d-flex align-items-center">
+                                <input class="form-check-input ms-0 me-3" type="radio" name="payment_method" id="online" value="online_payment">
+                                <label class="form-check-label w-100" for="online">
+                                    <div class="fw-bold"><i class="bi bi-credit-card me-1"></i>{{ _('online_payment') }}</div>
+                                    <small class="text-muted">{{ _('online_payment_desc') }}</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('buyer.dashboard') }}" class="btn btn-secondary btn-lg flex-grow-1 rounded-pill">{{ _('cancel') }}</a>
+                            <button type="submit" class="btn btn-success btn-lg flex-grow-2 rounded-pill px-5">
+                                <i class="bi bi-cart-check-fill me-1"></i>{{ _('pay_now') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

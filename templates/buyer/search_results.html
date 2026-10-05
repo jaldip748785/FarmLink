@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Search Products | FarmLink{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Page Heading -->
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">
+            <i class="bi bi-search text-success"></i>
+            {{ _('search_farm_products') }}
+        </h2>
+        <p class="text-muted">
+            {{ _('search_farm_products_desc') }}
+        </p>
+    </div>
+
+    <!-- Search Form -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-6">
+            <form method="GET" action="/buyer/search" class="d-flex shadow-sm rounded-pill overflow-hidden bg-white border">
+                <input id="voice-search-input" type="text" 
+                       class="form-control border-0 px-4 py-3" 
+                       name="keyword" 
+                       placeholder="{{ _('search_placeholder') }}" 
+                       value="{{ keyword }}" 
+                       required>
+                <button id="voice-search-btn" type="button" class="btn btn-outline-secondary px-3 rounded-pill m-1 me-0" title="Voice Search">
+                    <i class="bi bi-mic-fill"></i>
+                </button>
+                <button type="submit" class="btn btn-success px-4 rounded-pill m-1">
+                    <i class="bi bi-search"></i> {{ _('search') }}
+                </button>
+            </form>
+            {% if keyword %}
+                <div class="text-center mt-2 text-muted">
+                    {{ _('showing_results_for') }} "<strong>{{ keyword }}</strong>"
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Search Results -->
+    <div>
+        <h4 class="fw-bold mb-4">{{ _('search_results') }}</h4>
+
+        <div class="row g-4">
+            {% for product in products %}
+            <!-- Product Card -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card shadow-sm border-0 h-100 rounded-3 overflow-hidden d-flex flex-column">
+                    <img src="{{ url_for('static', filename='uploads/' + product.image if product.image else 'uploads/products/default.jpg') }}"
+                         class="card-img-top"
+                         alt="Product Image"
+                         style="height: 200px; object-fit: cover;">
+                    <div class="card-body p-3 d-flex flex-column">
+                        <span class="badge bg-success-subtle text-success align-self-start mb-2">
+                            {{ product.category.name if product.category else 'N/A' }}
+                        </span>
+                        <h5 class="card-title fw-bold mb-1">{{ product.title }}</h5>
+                        <p class="card-text text-muted small flex-grow-1">{{ product.description }}</p>
+                        
+                        <h4 class="text-success fw-bold">₹{{ product.price }} <small class="text-muted fs-6">/ {{ product.unit }}</small></h4>
+                        <hr>
+                        <p class="mb-1 small">
+                            <i class="bi bi-person-fill text-success"></i> <strong>{{ _('seller') }}:</strong> {{ product.farmer.full_name if product.farmer else 'N/A' }}
+                        </p>
+                        <p class="mb-1 small">
+                            <i class="bi bi-box-seam text-success"></i> <strong>{{ _('quantity') }}:</strong> {{ product.quantity }} {{ product.unit }}
+                        </p>
+                        <p class="mb-3 small">
+                            <i class="bi bi-geo-alt-fill text-danger"></i> 
+                            {{ product.village.name if product.village else '' }} {{ product.taluka.name if product.taluka else '' }} {{ product.district.name if product.district else '' }}
+                        </p>
+
+                        <a href="/buyer/product/{{ product.id }}" class="btn btn-success w-100 mt-auto">
+                            <i class="bi bi-eye-fill"></i> {{ _('view_details') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12 text-center py-5">
+                {% if keyword %}
+                <div class="alert alert-warning rounded-4 p-5">
+                    <i class="bi bi-exclamation-triangle display-3 text-warning mb-3 d-block"></i>
+                    <h5>{{ _('no_products_found_matching') }} "{{ keyword }}".</h5>
+                    <p class="mb-0 text-muted">{{ _('try_searching_different') }}</p>
+                </div>
+                {% else %}
+                <div class="alert alert-info rounded-4 p-5">
+                    <i class="bi bi-search display-3 text-info mb-3 d-block"></i>
+                    <h5>{{ _('please_enter_keyword') }}</h5>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

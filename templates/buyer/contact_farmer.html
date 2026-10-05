@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Seller | FarmLink{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-header bg-success text-white text-center py-4">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="bi bi-telephone-outbound"></i>
+                        {{ _('contact_seller') }}
+                    </h3>
+                </div>
+                <div class="card-body p-4 text-center">
+                    <img src="{{ url_for('static', filename='uploads/profiles/default.png') if not farmer.profile_image else url_for('static', filename='uploads/' + farmer.profile_image) }}"
+                         class="rounded-circle border shadow-sm mb-3"
+                         width="100"
+                         height="100"
+                         alt="{{ _('seller_photo') }}">
+                    
+                    <h4 class="fw-bold mb-1">{{ farmer.full_name }}</h4>
+                    <p class="text-muted"><i class="bi bi-geo-alt-fill text-danger"></i> {{ farmer.village.name if farmer.village else '' }}, {{ farmer.taluka.name if farmer.taluka else '' }}, {{ farmer.district.name if farmer.district else '' }}</p>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="mb-4">
+                        <h5 class="text-muted fw-semibold">{{ _('phone_number') }}</h5>
+                        <p class="fs-3 fw-bold text-success mb-1">
+                             <i class="bi bi-telephone-fill"></i>
+                            {{ farmer.phone }}
+                        </p>
+                        <small class="text-muted">{{ _('call_directly_desc') }}</small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5 class="text-muted fw-semibold">{{ _('email') }}</h5>
+                        <p class="fs-5 fw-medium mb-0">
+                            <i class="bi bi-envelope-fill"></i>
+                            {{ farmer.email }}
+                        </p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="text-muted fw-semibold">{{ _('seller_address') }}</h5>
+                        <p class="fs-6 fw-medium mb-0">
+                            {{ farmer.address if farmer.address else _('no_description_available') }}
+                        </p>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a href="tel:{{ farmer.phone }}" class="btn btn-success btn-lg">
+                            <i class="bi bi-telephone-fill"></i> {{ _('call_now') }}
+                        </a>
+                        <a href="/buyer/farmer/{{ farmer.id }}" class="btn btn-outline-success">
+                            {{ _('view_seller_listings') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+Flask
+Flask-Login
+Flask-MySQLdb
+python-dotenv
+Werkzeug
+mysqlclient
+Pillow
+email-validator
+WTForms
+gunicorn
+requests
+Flask-APScheduler
+pytest
